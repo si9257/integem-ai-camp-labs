@@ -104,27 +104,51 @@ export function init(page, connect) {
     el("div", { cls: "mast-inner" }, brand, nav, tools)
   );
 }
+export function coverURL(which) {
+  return new URL("./cover-" + which + ".webp", import.meta.url).href;
+}
 export function hero(kind, meta, title, desc) {
-  const art = el(
-    "div",
-    { cls: "hero-art " + kind, "aria-hidden": "true" },
-    el("i", { cls: "shape a" }),
-    el("i", { cls: "shape b" }),
-    el("i", { cls: "shape c" }),
-    el("i", { cls: "shape d" })
-  );
+  const image = el("img", {
+    cls: "hero-image",
+    src: coverURL(kind === "study" ? "study" : "sf"),
+    width: 768,
+    height: 512,
+    alt: "",
+    fetchpriority: "high",
+  });
+  const picture = el("div", { cls: "hero-picture" }, image);
+  if (kind === "travel") picture.append(el("span", { cls: "city-caption" }));
   return el(
     "section",
-    { cls: "hero" },
+    { cls: "hero " + kind + "-hero" },
     el(
       "div",
-      {},
+      { cls: "hero-copy" },
       el("p", { cls: "eyebrow" }, meta),
       el("h1", {}, title),
       el("p", { cls: "intro" }, desc)
     ),
-    art
+    picture
   );
+}
+export function workspaceTabs(label, choices, change) {
+  const nav = el("nav", { cls: "view-tabs", "aria-label": label });
+  const buttons = new Map();
+  function select(key) {
+    for (const [id, button] of buttons)
+      button.setAttribute("aria-pressed", String(key === id));
+    change(key);
+  }
+  for (const [id, name, symbol] of choices) {
+    const button = btn("", () => select(id), "view-tab");
+    button.append(
+      el("span", { cls: "tab-icon", "aria-hidden": "true" }, symbol),
+      name
+    );
+    buttons.set(id, button);
+    nav.append(button);
+  }
+  return { element: nav, select };
 }
 export const notice = () =>
   el("p", { cls: "notice", role: "status", "aria-live": "polite" });

@@ -1,7 +1,8 @@
 import { t } from "./common.js";
 // Each entry describes the part of the site used for this activity.
-const stop = (id, name, zhName, inside, tags, url, en, zh) => ({
+const stop = (id, point, name, zhName, inside, tags, url, en, zh) => ({
   id,
+  point,
   name: t(name, zhName),
   english: name,
   inside,
@@ -23,6 +24,7 @@ export const cities = {
     places: [
       stop(
         "exploratorium",
+        [37.8014, -122.3976],
         "Exploratorium",
         "探索博物馆",
         true,
@@ -33,6 +35,7 @@ export const cities = {
       ),
       stop(
         "academy",
+        [37.7701, -122.4664],
         "California Academy of Sciences",
         "加州科学博物馆",
         true,
@@ -43,6 +46,7 @@ export const cities = {
       ),
       stop(
         "tunnel-tops",
+        [37.79806, -122.46583],
         "Presidio Tunnel Tops",
         "普雷西迪奥隧顶公园",
         false,
@@ -53,6 +57,7 @@ export const cities = {
       ),
       stop(
         "golden-gate",
+        [37.76972, -122.47694],
         "Golden Gate Park",
         "金门公园",
         false,
@@ -70,6 +75,7 @@ export const cities = {
     places: [
       stop(
         "flight",
+        [47.51806, -122.29694],
         "The Museum of Flight",
         "飞行博物馆",
         true,
@@ -80,6 +86,7 @@ export const cities = {
       ),
       stop(
         "pacsci",
+        [47.6192, -122.3511],
         "Pacific Science Center",
         "太平洋科学中心",
         true,
@@ -90,6 +97,7 @@ export const cities = {
       ),
       stop(
         "sculpture",
+        [47.61639, -122.35528],
         "Olympic Sculpture Park",
         "奥林匹克雕塑公园",
         false,
@@ -100,6 +108,7 @@ export const cities = {
       ),
       stop(
         "aquarium",
+        [47.6075, -122.34306],
         "Seattle Aquarium",
         "西雅图水族馆",
         true,
@@ -117,6 +126,7 @@ export const cities = {
     places: [
       stop(
         "natural-history",
+        [38.8913, -77.0259],
         "National Museum of Natural History",
         "美国国家自然历史博物馆",
         true,
@@ -127,6 +137,7 @@ export const cities = {
       ),
       stop(
         "air-space",
+        [38.88833, -77.02],
         "National Air and Space Museum (DC)",
         "美国国家航空航天博物馆（特区馆）",
         true,
@@ -137,6 +148,7 @@ export const cities = {
       ),
       stop(
         "conservatory",
+        [38.888, -77.013],
         "U.S. Botanic Garden Conservatory",
         "美国植物园温室",
         true,
@@ -147,6 +159,7 @@ export const cities = {
       ),
       stop(
         "lincoln",
+        [38.889278, -77.050139],
         "Lincoln Memorial plaza",
         "林肯纪念堂广场",
         false,

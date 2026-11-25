@@ -8,6 +8,8 @@ import {
   card,
   init,
   hero,
+  coverURL,
+  workspaceTabs,
   notice,
   message,
   t,
@@ -21,6 +23,7 @@ import {
   plusDays,
 } from "./common.js";
 import { configured, openAISettings, chat } from "./ai.js";
+import { createPlaceMap, osmPlaceURL } from "./city-map.js";
 import { cities, interests, setting } from "./places.js";
 import {
   pointsURL,
@@ -145,6 +148,10 @@ function syncForm() {
   dateInput.value = state.start;
   lengthSelect.value = String(state.days);
   renderInterests();
+  const image = $(".hero-image", banner);
+  const src = coverURL(state.city);
+  if (image.src !== src) image.src = src;
+  $(".city-caption", banner).textContent = city().name;
 }
 function renderInterests() {
   chips.replaceChildren(
@@ -267,41 +274,71 @@ function example() {
   state.appliedBrief = "";
   applyBrief();
 }
-const briefPanel = card(
-  t("Trip brief", "出行偏好"),
-  field(
-    t("Who is going, and what would they enjoy?", "和谁去，想体验什么？"),
-    brief
-  ),
-  el(
-    "div",
-    { cls: "actions" },
-    btn(t("Use family example", "使用家庭示例"), example),
-    btn(t("Apply trip brief", "应用出行描述"), applyBrief)
-  ),
-  field(t("Destination", "目的地"), citySelect),
-  el(
-    "div",
-    { cls: "pair" },
-    field(t("First day", "出发日期"), dateInput),
-    field(t("Duration", "行程天数"), lengthSelect)
-  ),
-  el("div", { cls: "field" }, el("span", {}, t("Interests", "兴趣")), chips),
-  field(t("Budget or access needs", "预算或特殊要求"), budget),
-  aiBtn,
-  tripStatus
+const banner = hero(
+  "travel",
+  t("TWO-WEEK LAB  /  AGES 13–18", "两周班  /  13–18 岁"),
+  "Field Trip Atlas",
+  t(
+    "Pick a city. Pin the places you love. Build a trip around the forecast.",
+    "选一座城市，标记想去的景点，再看看天气，安排自己的行程。"
+  )
 );
+const tripBar = el(
+  "div",
+  { cls: "trip-bar" },
+  field(t("Destination", "目的地"), citySelect),
+  field(t("First day", "出发日期"), dateInput),
+  field(t("Duration", "行程天数"), lengthSelect),
+  aiBtn
+);
+const briefDetails = el(
+  "details",
+  { cls: "trip-brief" },
+  el(
+    "summary",
+    {},
+    el("strong", {}, t("Trip brief", "出行偏好")),
+    el("span", {}, t("Family, interests & budget", "同行人、兴趣与预算"))
+  ),
+  el(
+    "div",
+    { cls: "brief-body" },
+    el(
+      "div",
+      {},
+      field(
+        t("Who is going, and what would they enjoy?", "和谁去，想体验什么？"),
+        brief
+      ),
+      el(
+        "div",
+        { cls: "actions" },
+        btn(t("Use family example", "使用家庭示例"), example),
+        btn(t("Apply trip brief", "应用出行描述"), applyBrief)
+      )
+    ),
+    el(
+      "div",
+      { cls: "stack" },
+      el(
+        "div",
+        { cls: "field" },
+        el("span", {}, t("Interests", "兴趣")),
+        chips
+      ),
+      field(t("Budget or access needs", "预算或特殊要求"), budget)
+    )
+  )
+);
+const map = createPlaceMap(addToDay);
 const weatherPanel = card(
   t("Weather window", "天气预报"),
   weatherBody,
   weatherStatus,
   retry
 );
-const placesPanel = card(
-  t("Field guide", "景点手册"),
-  field(t("Add places to", "将景点添加到"), daySelect),
-  catalog
-);
+const placesPanel = card(t("Places to explore", "探索景点"), catalog);
+placesPanel.classList.add("places-panel");
 const planPanel = card(
   t("Your itinerary", "我的行程"),
   itinerary,
@@ -319,34 +356,69 @@ const planPanel = card(
   ),
   planStatus
 );
-function order(panel, n) {
-  panel.dataset.order = n;
-  panel.style.setProperty("--order", n);
-  return panel;
-}
-$("#app").append(
-  hero(
-    "travel",
-    t("TWO-WEEK LAB   /   AGES 13–18", "两周班   /   13–18 岁"),
-    "Field Trip Atlas",
-    t(
-      "Choose a city, read its forecast and build a day worth exploring.",
-      "选一座城市，读读天气预报，安排值得探索的一天。"
-    )
-  ),
-  el(
-    "div",
-    { cls: "grid" },
-    el("div", { cls: "stack" }, order(briefPanel, 1), order(placesPanel, 3)),
-    el("div", { cls: "stack" }, order(weatherPanel, 2), order(planPanel, 4))
-  )
+const dayControl = field(t("Planning for", "当前规划日期"), daySelect);
+dayControl.classList.add("day-picker");
+const work = el(
+  "div",
+  { cls: "atlas-workspace" },
+  placesPanel,
+  planPanel,
+  weatherPanel,
+  map.element
 );
+const tabs = workspaceTabs(
+  t("Atlas workspace", "旅行工作区"),
+  [
+    ["explore", t("Explore", "探索"), "⌕"],
+    ["map", t("Map", "地图"), "◎"],
+    ["itinerary", t("Itinerary", "行程"), "≡"],
+    ["weather", t("Weather", "天气"), "☀"],
+  ],
+  (key) => {
+    work.dataset.view = key;
+    placesPanel.hidden = key !== "explore";
+    planPanel.hidden = key !== "itinerary";
+    weatherPanel.hidden = key !== "weather";
+    map.element.hidden = key === "weather";
+    dayControl.hidden = key === "weather";
+  }
+);
+$("#app").append(
+  banner,
+  el(
+    "section",
+    { cls: "trip-controls", "aria-label": t("Trip preferences", "出行偏好") },
+    tripBar,
+    briefDetails,
+    tripStatus
+  ),
+  el("div", { cls: "atlas-toolbar" }, tabs.element, dayControl),
+  work
+);
+tabs.select("explore");
 daySelect.addEventListener("change", () => {
   activeDay = Number(daySelect.value);
   renderCatalog();
 });
+function addToDay(id) {
+  const date = dates()[activeDay],
+    place = findPlace(id);
+  if (!place || stops(date).some((stop) => stop.id === id)) return;
+  plan()[date] = [...stops(date), { id, reason: "manual" }];
+  changed();
+  renderPlan();
+  renderCatalog();
+  message(
+    tripStatus,
+    place.name +
+      t(" added to day ", " 已添加到第 ") +
+      (activeDay + 1) +
+      t(".", " 天。")
+  );
+}
 function renderCatalog() {
-  const days = dates();
+  const days = dates(),
+    date = days[activeDay];
   daySelect.replaceChildren(
     ...days.map((day, i) =>
       el("option", { value: i }, t("Day ", "第 ") + (i + 1) + " · " + day)
@@ -354,43 +426,61 @@ function renderCatalog() {
   );
   daySelect.value = String(activeDay);
   catalog.replaceChildren(
-    ...city().places.map((p) => {
-      const date = days[activeDay],
-        added = stops(date).some((s) => s.id === p.id);
+    ...city().places.map((p, i) => {
+      const added = stops(date).some((stop) => stop.id === p.id);
       const add = btn(
         added
           ? t("Added", "已添加")
           : t("Add to day ", "添加到第 ") + (activeDay + 1),
-        () => {
-          if (stops(date).some((s) => s.id === p.id)) return;
-          plan()[date] = [...stops(date), { id: p.id, reason: "manual" }];
-          changed();
-          renderPlan();
-          renderCatalog();
-          message(planStatus, p.name + " · " + date);
-        },
-        "subtle"
+        () => addToDay(p.id),
+        "add-place"
       );
       add.disabled = added;
+      const show = btn(
+        t("Show on map", "地图定位"),
+        () => {
+          tabs.select("map");
+          map.select(p.id);
+          map.element.scrollIntoView({ block: "nearest" });
+        },
+        "text-btn"
+      );
       return el(
         "article",
         { cls: "place" },
         el(
-          "div",
-          { cls: "place-head" },
-          el("h3", {}, p.name),
-          el("span", { cls: "tag" }, setting(p))
+          "span",
+          { cls: "place-letter tone-" + i, "aria-hidden": "true" },
+          String.fromCharCode(65 + i)
         ),
-        el("p", { cls: "small" }, p.description),
         el(
           "div",
-          { cls: "actions" },
-          add,
-          link(t("Official site ↗", "官方网站 ↗"), p.url, true)
+          { cls: "place-copy" },
+          el(
+            "div",
+            { cls: "place-meta" },
+            setting(p) + " · " + interests[p.tags[0]]
+          ),
+          el("h3", {}, p.name),
+          el("p", { cls: "place-desc" }, p.description),
+          el(
+            "div",
+            { cls: "actions" },
+            add,
+            show,
+            link(t("Official site ↗", "官方网站 ↗"), p.url, true)
+          )
         )
       );
     })
   );
+  map.update({
+    city: state.city,
+    places: city().places,
+    stops: stops(date),
+    day: activeDay,
+    date,
+  });
 }
 function renderWeather() {
   weatherBody.replaceChildren(
@@ -584,8 +674,8 @@ function renderPlan() {
       section.append(
         small(
           t(
-            "Choose this day in the field guide and add a place.",
-            "在景点手册中选中本日，然后添加景点。"
+            "Open Explore or Map, choose this day and add a place.",
+            "打开探索或地图，选中本日，然后添加景点。"
           )
         )
       );
@@ -636,7 +726,7 @@ async function makePlan() {
     message(
       tripStatus,
       t(
-        "Connect AI or add places from the field guide.",
+        "Connect AI or add a place from Explore or Map.",
         "可连接 AI，或从景点手册手动添加。"
       )
     );
@@ -754,6 +844,7 @@ async function makePlan() {
         "AI 行程已保存，可继续编辑每天的安排。"
       )
     );
+    tabs.select("itinerary");
     planPanel.scrollIntoView({ block: "start" });
   } catch (e) {
     message(tripStatus, e.message, true);
@@ -804,7 +895,8 @@ function exportTrip() {
           n + 1 + ". " + p.name + " · " + setting(p),
           describe(s),
           p.description,
-          p.url
+          p.url,
+          t("Map: ", "地图：") + osmPlaceURL(p)
         );
     }
   }

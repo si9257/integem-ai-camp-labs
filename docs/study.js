@@ -6,6 +6,7 @@ import {
   field,
   card,
   hero,
+  workspaceTabs,
   notice,
   message,
   init,
@@ -102,6 +103,8 @@ const tutorPanel = card(
   tutorBody,
   tutorStatus
 );
+const recordList = el("div", { cls: "recent-rounds" });
+const recordStatus = notice();
 const recordPanel = card(
   t("Learning record", "学习记录"),
   small(
@@ -110,30 +113,87 @@ const recordPanel = card(
       "导出 Markdown，包含笔记、成绩、答案和导师对话。"
     )
   ),
-  btn(t("Export learning record", "导出学习记录"), exportRecord)
+  recordList,
+  btn(t("Export learning record", "导出学习记录"), exportRecord),
+  recordStatus
 );
-function order(panel, n) {
-  panel.dataset.order = n;
-  panel.style.setProperty("--order", n);
-  return panel;
-}
+const work = el(
+  "div",
+  { cls: "study-workspace" },
+  notesPanel,
+  quizPanel,
+  tutorPanel,
+  recordPanel
+);
+const tabs = workspaceTabs(
+  t("Study workspace", "学习工作区"),
+  [
+    ["desk", t("Notes & quiz", "笔记与测验"), "#"],
+    ["tutor", t("AI tutor", "AI 导师"), "✦"],
+    ["record", t("Learning record", "学习记录"), "≡"],
+  ],
+  (key) => {
+    work.dataset.view = key;
+    notesPanel.hidden = quizPanel.hidden = key !== "desk";
+    tutorPanel.hidden = key !== "tutor";
+    recordPanel.hidden = key !== "record";
+    if (key === "record") renderRecord();
+  }
+);
 $("#app").append(
   hero(
     "study",
-    t("ONE-WEEK LAB   /   AGES 13–17", "一周班   /   13–17 岁"),
+    t("ONE-WEEK LAB  /  AGES 13–17", "一周班  /  13–17 岁"),
     "Study Desk",
     t(
-      "Test an idea from your notes. Revisit what tripped you up.",
-      "用自己的笔记出题，把没想明白的地方弄懂。"
+      "Turn your notes into a quiz. Ask your tutor when an answer doesn’t click.",
+      "把笔记变成测验。遇到没弄懂的答案，随时问导师。"
     )
   ),
-  el(
-    "div",
-    { cls: "grid" },
-    el("div", { cls: "stack" }, order(notesPanel, 1), order(tutorPanel, 3)),
-    el("div", { cls: "stack" }, order(quizPanel, 2), order(recordPanel, 4))
-  )
+  tabs.element,
+  work
 );
+tabs.select("desk");
+function renderRecord() {
+  const rounds = [
+    ...state.rounds,
+    ...(state.quiz ? [state.quiz] : []),
+  ].reverse();
+  recordList.replaceChildren(
+    ...(rounds.length
+      ? rounds.map((q) => {
+          const answered = q.answers.filter((a) => a !== null).length;
+          return el(
+            "article",
+            { cls: "round-row" },
+            el(
+              "div",
+              {},
+              el("strong", {}, q.name),
+              small(prettyTime(q.started))
+            ),
+            el(
+              "span",
+              { cls: "tag" },
+              q.complete
+                ? score(q) + " / " + q.questions.length
+                : answered +
+                    " / " +
+                    q.questions.length +
+                    t(" answered", " 已作答")
+            )
+          );
+        })
+      : [
+          small(
+            t(
+              "Your practice rounds will appear here after you start a quiz.",
+              "开始测验后，这里会列出每一轮学习记录。"
+            )
+          ),
+        ])
+  );
+}
 function newRound(source, questions, kind, name) {
   return {
     id: crypto.randomUUID(),
@@ -282,6 +342,7 @@ async function generate() {
       "ai",
       t("AI-generated quiz", "AI 生成测验")
     );
+    tabs.select("desk");
     quizPanel.scrollIntoView({ block: "start" });
   } catch (e) {
     message(quizStatus, e.message, true);
@@ -315,7 +376,8 @@ function setTutor(index) {
   q.focus = index;
   persist();
   renderTutor();
-  tutorPanel.scrollIntoView({ block: "center" });
+  tabs.select("tutor");
+  tutorPanel.scrollIntoView({ block: "start" });
   $("#tutor-question")?.focus();
 }
 function renderQuiz() {
@@ -323,6 +385,8 @@ function renderQuiz() {
   const q = state.quiz;
   if (!q) {
     quizBody.append(
+      el("div", { cls: "quiz-glyph", "aria-hidden": "true" }, "?"),
+      el("h3", {}, t("Try the soil lab", "试试土壤实验")),
       small(
         t(
           "Generate a quiz from your notebook, or try four prepared questions about two soil trays. The prepared set has its own source notes.",
@@ -407,7 +471,20 @@ function renderQuiz() {
     "aria-label": t("Answer options", "答案选项"),
   });
   quizBody.append(
-    small(t("Question ", "第 ") + (i + 1) + " / " + q.questions.length),
+    el(
+      "div",
+      { cls: "quiz-progress" },
+      el(
+        "span",
+        {},
+        t("Question ", "第 ") + (i + 1) + " / " + q.questions.length
+      ),
+      el("progress", {
+        max: q.questions.length,
+        value: q.answers.filter((v) => v !== null).length,
+        "aria-label": t("Answered questions", "已答题数"),
+      })
+    ),
     el("h3", {}, item.question),
     options
   );
@@ -645,7 +722,7 @@ function exportRecord() {
   }
   for (const m of state.history) lines.push("", m.role + " · " + m.content);
   download("study-desk-record.md", lines.join("\n"));
-  message(noteStatus, t("Learning record exported.", "学习记录已导出。"));
+  message(recordStatus, t("Learning record exported.", "学习记录已导出。"));
 }
 renderQuiz();
 renderTutor();

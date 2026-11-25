@@ -1,22 +1,26 @@
-import { el, $, init, t } from "./common.js";
+import { el, $, init, t, coverURL } from "./common.js";
 init("home");
-function course(kind, title, meta, description, action) {
-  const cover = el(
-    "div",
-    { cls: "cover " + kind, "aria-hidden": "true" },
-    el("div", { cls: "emblem" }, el("i"), el("b"), el("span"))
-  );
+function course(path, art, meta, title, description, action) {
   return el(
     "a",
-    { cls: "course " + kind, href: kind + "/" },
-    cover,
+    { cls: "course " + path, href: path + "/" },
+    el(
+      "div",
+      { cls: "course-image" },
+      el("img", { src: coverURL(art), width: 768, height: 512, alt: "" })
+    ),
     el(
       "div",
       { cls: "course-copy" },
       el("p", { cls: "eyebrow" }, meta),
       el("h2", {}, title),
       el("p", {}, description),
-      el("strong", {}, action + "  ↗")
+      el(
+        "span",
+        { cls: "course-action" },
+        action,
+        el("span", { "aria-hidden": "true" }, "↗")
+      )
     )
   );
 }
@@ -24,18 +28,13 @@ $("#app").append(
   el(
     "section",
     { cls: "home-intro" },
-    el(
-      "p",
-      { cls: "eyebrow" },
-      "INTEGEM   /   " + t("SUMMER STUDIO", "夏季工作室")
-    ),
     el("h1", {}, t("AI Camp Labs", "AI 夏令营实验室")),
     el(
       "p",
       { cls: "intro" },
       t(
-        "Bring a page of notes or a place you want to explore. Choose a lab to start building.",
-        "带上一页笔记，或一个想去的目的地。选一门课，开始动手。"
+        "Turn class notes into a quiz or map out a family adventure. Pick a project to make your own.",
+        "把课堂笔记变成测验，或把全家的旅行画上地图。选一个项目，动手试试。"
       )
     )
   ),
@@ -44,23 +43,25 @@ $("#app").append(
     { cls: "course-grid" },
     course(
       "study",
+      "study",
+      t("ONE WEEK  /  AGES 13–17", "一周班  /  13–17 岁"),
       "Study Desk",
-      t("1 WEEK  /  AGES 13–17", "一周班  /  13–17 岁"),
       t(
-        "Turn your own notes into a quiz, then ask a tutor to unpack the answers.",
-        "把自己的笔记变成测验，再和导师一起弄懂错题。"
+        "Quiz yourself on your notes. Then talk through a tricky answer with your AI tutor.",
+        "用自己的笔记出题，和 AI 导师一起弄懂错题。"
       ),
       t("Open study desk", "进入学习桌")
     ),
     course(
       "travel",
+      "sf",
+      t("TWO WEEKS  /  AGES 13–18", "两周班  /  13–18 岁"),
       "Field Trip Atlas",
-      t("2 WEEKS  /  AGES 13–18", "两周班  /  13–18 岁"),
       t(
-        "Build a family itinerary with real places and a National Weather Service forecast.",
-        "结合真实景点和美国国家气象局预报，设计家庭行程。"
+        "Explore real places on a map. Use the forecast to plan a day that works for your family.",
+        "在地图上找真实景点，根据天气为全家安排一天的行程。"
       ),
-      t("Open field atlas", "打开旅行图册")
+      t("Open trip planner", "打开旅行规划器")
     )
   )
 );
