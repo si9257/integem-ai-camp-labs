@@ -77,6 +77,12 @@ const files = new Set([
   "ai.js",
   "sample.js",
   "study.js",
+  "study-print.js",
+  "study-print.css",
+  "study-store.js",
+  "note-quiz.js",
+  "generation.js",
+  "generation.css",
   "study-library.js",
   "recall-ui.js",
   "study-studio.css",
@@ -229,6 +235,10 @@ async function upstreamReply(req, res) {
     return json(res, 429, { error: "Class limit reached" });
   usage.push(Date.now());
   inFlight++;
+  const controller = new AbortController();
+  const stop = () => controller.abort();
+  const timer = setTimeout(stop, 90000);
+  res.on("close", stop);
   try {
     const outgoing = {
       model,
@@ -244,17 +254,17 @@ async function upstreamReply(req, res) {
     const upstream = await fetch(base, {
       method: "POST",
       redirect: "error",
-      signal: AbortSignal.timeout(55000),
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + providerKey,
       },
       body: JSON.stringify(outgoing),
     });
-    if (!upstream.ok)
+    if (!upstream.ok && ![400, 413, 422].includes(upstream.status))
       return json(
         res,
-        [400, 401, 403, 429].includes(upstream.status) ? upstream.status : 502,
+        [401, 403, 429].includes(upstream.status) ? upstream.status : 502,
         { error: "Upstream request failed" }
       );
     const reader = upstream.body.getReader();
@@ -270,18 +280,41 @@ async function upstreamReply(req, res) {
       }
       pieces.push(value);
     }
-    const answer = JSON.parse(Buffer.concat(pieces).toString("utf8"))
-      .choices?.[0]?.message?.content;
+    const responseText = Buffer.concat(pieces).toString("utf8");
+    if (!upstream.ok) {
+      // Share only a stable error category, never the provider's raw message.
+      const tooLong =
+        upstream.status === 413 ||
+        /context[_ ]length|maximum context|too many (?:input )?tokens|input.{0,20}too long|prompt.{0,25}(?:too long|exceed)/i.test(
+          responseText
+        );
+      return json(res, upstream.status, {
+        error: tooLong
+          ? "Maximum context length exceeded"
+          : "Upstream request failed",
+      });
+    }
+    const choice = JSON.parse(responseText).choices?.[0];
+    const answer = choice?.message?.content;
     if (typeof answer !== "string" || !answer.trim())
       throw Error("Missing reply");
     json(res, 200, {
-      choices: [{ message: { role: "assistant", content: answer } }],
+      choices: [
+        {
+          finish_reason: choice.finish_reason === "length" ? "length" : "stop",
+          message: { role: "assistant", content: answer },
+        },
+      ],
     });
   } catch {
-    json(res, 502, {
-      error: "Upstream unavailable, timed out, or returned an unreadable reply",
-    });
+    if (!res.destroyed)
+      json(res, 502, {
+        error:
+          "Upstream unavailable, timed out, or returned an unreadable reply",
+      });
   } finally {
+    clearTimeout(timer);
+    res.off("close", stop);
     inFlight--;
   }
 }

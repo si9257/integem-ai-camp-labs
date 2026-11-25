@@ -30,6 +30,25 @@
 
 完整的分龄任务和实测结果见[学生视角测评](STUDENT_WALKTHROUGH.md)。学习设计参考了 [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn)、[Anki 学习手册](https://docs.ankiweb.net/manual/studying)、[Khan Academy 练习反馈](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery) 和[美国教育科学研究院实践指南](https://ies.ed.gov/ncee/wwc/PracticeGuide/1)。
 
+## 把测验和回忆卡带到纸上
+
+| 上课想做什么 | 学生或老师怎么点 |
+| --- | --- |
+| 发一份没有答案的练习卷 | 先点预置题组，或在 **Notebook** 生成自己的测验。打开该轮的 **Print quiz**。默认的 **Student worksheet** 包含姓名、日期、选项和写依据的横线。 |
+| 给老师留一份答案 | **Print format** 选 **Teacher answer key** 单印答案、解析和原句；选 **Worksheet + separate key** 会在新的一页开始印答案。使用 **At the end** 时，交卷后才出现答案选项。做完一轮，还能勾 **First-try misses only** 只印首次答错的题。 |
+| 做可折叠的回忆卡 | **Notebook → Make recall cards**，核对两面并点 **Save & print**。以前存好的卡用 **Notebook → Print recall cards**。保持 **Cut & fold cards**，按需要勾选原句。单面打印，沿外框裁开，让文字朝外沿中线对折。 |
+| 合起笔记做默写 | 在同一预览里选 **Written recall sheet**。问题右边留白，可在纸上写答案。要打印课堂笔记，在 **Notebook** 点 **Print notes**。 |
+
+最后点 **Print / Save PDF**，在设备的打印窗口选打印机或存为 PDF。没有连接 AI 也可以用预置题组、自制卡片和笔记完成这节纸笔课。
+
+## 长笔记与 AI 等待画面
+
+笔记框可以粘贴完整课文或几份合并的课堂记录，应用没有设定字数门槛。一行有事实的笔记就能尝试出题。材料支持的题目较少时，模型可以返回较少题目。长笔记会拆成多段逐段发给网关，收集能逐字对上原文的摘录，再从不同段落选择材料组成测验。每段会占用一次模型请求；保存容量取决于当前设备，较长笔记适合另外导出备份。
+
+点 **Generate quiz from notes** 或 **Plan with AI** 后，学生会看到动画、本次任务和已用时间。长笔记显示当前段落，多日行程显示正在规划的日期。支持流式返回的网关还会显示实际收到的字符数。整份返回的网关（含本地教师转发）在等待期间显示任务和计时。请保持页面打开；刷新或离开会中断本次未完成的生成。**Stop generating** 可立即停止，然后重试。已经保存的笔记和采用的行程可以继续使用。
+
+重新打开页面时，题目和已保存的完整行程先收起。点 **Open saved quiz**、**Open saved itinerary** 或练习室里的继续按钮即可恢复。直接选择预置题、手动加站、采用城市指南草案以及打开家人分享的行程，都会按所选动作显示对应内容。AI 旅行草案要再点 **Use this itinerary** 才会写入行程。
+
 ## 1　从一个新 GitHub 账号到公开仓库
 
 1. 在用于授课的浏览器打开 [GitHub Dashboard](https://github.com/dashboard)。需要时在 GitHub 页面输入账号、密码和验证码。看欢迎语中的用户名，或点右上角头像核对账号。本次实际使用了教师在 **Edge** 已登录的标签。内置浏览器的登录交接未能在教师侧显示。Edge 的欢迎语显示 **si9257**，当时仓库区显示 **No repositories found**。
@@ -45,6 +64,7 @@
 | --- | --- | --- |
 | `docs/index.html`、`docs/home.js` | 课程入口和两个作品链接 | 改课程介绍 |
 | `docs/study/index.html`、`docs/study.js`、`docs/sample.js`、`docs/study-library.js`、`docs/recall-ui.js`、`docs/study-studio.css` | 学习页、出题、判分、导师和原创托盘实验 | 改示例笔记，检查引用是否还能在原文中找到 |
+| `docs/study-print.js`、`docs/study-print.css`、`docs/study-store.js`、`docs/note-quiz.js`、`docs/generation.js`、`docs/generation.css` | 纸面格式、笔记持久保存、全文分段，以及两站共用的生成状态 | 改卷面或等待提示。源码和样式文件都放在 `docs/`。 |
 | `docs/travel/index.html`、`docs/travel.js` | 表单、偏好解析、AI 规划、每日排序和导出 | 改规划提示词或行程编辑方式 |
 | `docs/places.js`、`docs/weather.js` | 三城景点与官网、NWS 请求和按目的地时区筛选 | 核查景点来源，跟踪 `/points` 返回的预报链接 |
 | `docs/city-map.js`、`docs/cover-*.webp` | 等比例街道地图、景点标记、当天连线，以及四张本地封面插画 | 景点经纬度在 `guide-data.js`。调整地图呈现时保留地图署名。 |
@@ -72,7 +92,7 @@
 
 ## 4　根据手中的凭证选择 AI 配置
 
-两个作品调用 OpenAI 兼容的 `POST /v1/chat/completions`，发送 `model` 和 `messages`，读取 `choices[0].message.content`。页面里的 AI 设置在两个作品间共用 Base URL 和模型名。短期班级凭证只在当前页面内存中，刷新、换作品或重新打开后需要再填。笔记、成绩和行程保存在当前浏览器的本地存储。点击 AI 功能时，相应笔记或出行偏好才发给所配置的服务。课堂演示可用示例笔记和虚构家庭偏好。
+两个作品调用 OpenAI 兼容的 `POST /v1/chat/completions`，发送 `model` 和 `messages`，整份返回时读取 `choices[0].message.content`，流式返回时合并 `choices[0].delta.content`。页面里的 AI 设置在两个作品间共用 Base URL 和模型名。短期班级凭证只在当前页面内存中，刷新、换作品或重新打开后需要再填。笔记、成绩和行程保存在当前浏览器的本地存储。点击 AI 功能时，相应笔记或出行偏好才发给所配置的服务。课堂演示可用示例笔记和虚构家庭偏好。
 
 | 情形 | 老师做什么 | 学生如何使用 |
 | --- | --- | --- |
@@ -123,7 +143,7 @@ location = /v1/chat/completions {
 | 时间 | 老师和学生在手机上做什么 | 当场验收 |
 | --- | --- | --- |
 | 0–3 分钟 | 打开 **Practice → Storm lab**。在 **Source notes** 中读托盘实验，找出两盘相同的条件和主动改变的条件。 | 学生从原文指出每盘浇水 200 mL，收集的径流分别是 45 和 120 mL。 |
-| 3–7 分钟 | 第一题故意选 A，点 **Check answer**。先读提示，刷新；再选 C，点 **Check second answer**，核对引用。余下三题选 B、D、A。 | 刷新后仍停在首次错答。完成后首答成绩为 **3/4**，**Recovered after a hint** 为 **1**。让学生解释这两个数字各代表什么。 |
+| 3–7 分钟 | 第一题故意选 A，点 **Check answer**。先读提示，刷新后点 **Open saved quiz**，再选 C，点 **Check second answer**，核对引用。余下三题选 B、D、A。 | 重新打开测验后可从首次错答处继续。完成后首答成绩为 **3/4**，**Recovered after a hint** 为 **1**。让学生解释这两个数字各代表什么。 |
 | 7–10 分钟 | 点 **Retry missed questions**，选 C，查到 1/1。打开 **Progress → Export learning record**，找出首次选择、第二次选择和原文。换到 **Practice → Soundcheck**，让另一位学生解释乐队实验测了什么。 | 学生能区分“实验测了回声多久”和“听众更喜欢哪一遍”。两套练习均标为预置。 |
 | 10–15 分钟（需模型） | 在 **Notebook** 粘贴学生自己的材料，点 **Generate quiz from notes**。提交答案后点 **Ask why**，连续问“哪一句支持这个解释？”和一个原文没有回答的问题。 | 学生能打开出题时的原文，核对导师所引用的句子，并指出哪项缺少证据。 |
 
@@ -254,3 +274,7 @@ git push origin main
 两个学生入口与逐日教学已同步更新。完整过程包括真实症状、升级前后的同一份旧行程、本次打开的官方数据、各年龄的学生任务和仍需在课堂验证的项目。[分龄实测记录](STUDENT_WALKTHROUGH.md)
 
 从 GitHub 仓库 `docs` 的 **Add file → Upload files → Choose your files** 提交本轮改动。新学习模块为 `study-library.js`、`recall-ui.js`、`study-studio.css`；旅行日期解析在 `trip-brief.js`。分别进入 `docs/study`、`docs/travel` 更新各自的 `index.html`。最后在仓库根目录提交中英教师手册、逐日课表、README、分龄报告和更新静态文件清单后的 `relay.mjs`。每次均在网页填写 **Commit summary → Commit changes**，并在 **Actions → pages build and deployment** 查看结果。[应用修复](https://github.com/si9257/integem-ai-camp-labs/commit/b59eb5661ea6444701945701b71bb666474aa8e3) · [学生应用部署 #23](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45604892841)
+
+### 纸笔课堂与生成反馈更新
+
+本轮在 GitHub 网页的 **Add file → Upload files → Choose your files** 提交 `docs` 下的模块和两个作品各自的入口。提交到 `main` 后，通过 **Actions → pages build and deployment** 核对公开部署。Edge 实际保存并重新打开了 36,790 个字符，全文一致。本机用延迟测试响应验证了分段、逐步返回、停止、失败重试和草案采用；这项测试使用可重复的测试数据。真实班级模型按第 6 节单独验证。[功能提交](https://github.com/si9257/integem-ai-camp-labs/commit/01eb3c9a67e00f3cb518d4409fbdb61bc8d8e098) · [两个入口部署 #27](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45635959074)

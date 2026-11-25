@@ -30,6 +30,25 @@ At home, making cards, retrieving answers, taking card quizzes and importing a b
 
 See the [student task walkthrough](STUDENT_WALKTHROUGH.md). Product and teaching references include [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn), [Anki studying](https://docs.ankiweb.net/manual/studying), [Khan Academy mastery feedback](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery), and the [IES practice guide](https://ies.ed.gov/ncee/wwc/PracticeGuide/1).
 
+## Print a student worksheet or a recall deck
+
+| Classroom use | How to make it |
+| --- | --- |
+| Give students a quiz on paper | Choose a prepared deck or generate a quiz in **Notebook**. Open that round and choose **Print quiz**. The default **Student worksheet** includes name and date fields, answer choices and room to explain each choice. |
+| Keep a key for the teacher | Under **Print format**, select **Teacher answer key** for answers, explanations and source quotes. **Worksheet + separate key** starts the key on a fresh page. In **At the end** mode, submit the quiz before printing a key. After a round with misses, **First-try misses only** prints just those questions. |
+| Make a pocket deck | In **Notebook → Make recall cards**, check each side and choose **Save & print**. Use **Notebook → Print recall cards** for saved cards. Select **Cut & fold cards** and optionally include the source. Print single-sided, cut the dotted outlines and fold down the center with the words facing out. |
+| Practice written recall | In the card preview, select **Written recall sheet**. Students write answers in the empty right column. For the original text, choose **Notebook → Print notes**. |
+
+Choose **Print / Save PDF**, then select a printer or a PDF destination in the device's print dialog. Prepared quizzes, personal cards and notes all support paper practice without a model connection.
+
+## What the class sees during AI generation
+
+Students can paste the full text of their notes. The app sets no character minimum or maximum. A single factual observation can support a question. The model may produce fewer questions when the notes contain little evidence. For a long notebook, the app reads every section in separate model requests, checks quotations against the original text and samples evidence across sections for the final quiz. Allow for multiple requests on the class gateway and export a backup of large notebooks. Available storage depends on the device.
+
+After **Generate quiz from notes** or **Plan with AI**, an animated panel names the task and shows elapsed time. Longer notebooks show the current section and multiday itineraries show the date batch. Streaming gateways also report how many characters have actually arrived. Gateways that send the reply all at once, including the teacher relay, show the task and clock while waiting. Keep the tab open. Refreshing or leaving interrupts the unfinished request. **Stop generating** lets a student cancel and retry with their notes or adopted trip intact.
+
+On a fresh visit, questions and saved itinerary details stay closed until the learner selects them. Use **Open saved quiz**, **Open saved itinerary** or the Practice room's resume action to pick up where the student stopped. Choosing a prepared deck, adding a manual stop, adopting a guide or opening an explicit family share displays the chosen work. The model's trip preview becomes the itinerary only after **Use this itinerary**.
+
 ## 1. Start with a new GitHub account
 
 1. Open the [GitHub Dashboard](https://github.com/dashboard). If prompted, enter credentials and verification codes on the GitHub page. Check the welcome line or the avatar menu. For this release the teacher had already signed into **Edge**. The in-app browser handoff had not appeared on the teacher’s screen. Edge displayed **Welcome to GitHub, si9257!** and **No repositories found**.
@@ -45,6 +64,7 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 | --- | --- | --- |
 | `docs/index.html`, `docs/home.js` | Course home and project links | Reword a course introduction. |
 | `docs/study/index.html`, `docs/study.js`, `docs/sample.js`, `docs/study-library.js`, `docs/recall-ui.js`, `docs/study-studio.css` | Study entry, quiz, tutor, and original soil-tray lesson | Replace the sample and verify each quotation against it. |
+| `docs/study-print.js`, `docs/study-print.css`, `docs/study-store.js`, `docs/note-quiz.js`, `docs/generation.js`, `docs/generation.css` | Paper formats, notebook storage, full-note processing and generation status in both apps | Keep these modules and styles in `docs/` when publishing a copy. |
 | `docs/travel/index.html`, `docs/travel.js` | Family brief, controls, AI plan, day editor and export | Refine a planning constraint or a control. |
 | `docs/places.js`, `docs/weather.js` | Verified places, official links, NWS lookups and local-date matching | Check a venue source or follow a point-to-grid lookup. |
 | `docs/city-map.js`, `docs/cover-*.webp` | Interactive street map, day-order pins and four local illustrations | Venue coordinates live in `guide-data.js`. Keep attribution visible when editing the map. |
@@ -72,7 +92,7 @@ The classroom build at `2f079cb` was published from `main /docs`. [First deploym
 
 ## 4. Connect AI for the classroom or for home
 
-Both labs send `model` and `messages` to the OpenAI-compatible `POST /v1/chat/completions` endpoint and read `choices[0].message.content`. They share the saved Base URL and model ID on the same origin and browser. A short-lived class credential stays in the current page’s memory. Paste it again after refreshing or switching projects. Notes, results and trips use browser-local storage. An AI action sends the relevant notes or trip context to the specified service. Use the supplied notes and a fictional family for demonstrations.
+Both labs send `model` and `messages` to the OpenAI-compatible `POST /v1/chat/completions` endpoint and read `choices[0].message.content` for a buffered reply or assemble `choices[0].delta.content` for a streaming reply. They share the saved Base URL and model ID on the same origin and browser. A short-lived class credential stays in the current page’s memory. Paste it again after refreshing or switching projects. Notes, results and trips use browser-local storage. An AI action sends the relevant notes or trip context to the specified service. Use the supplied notes and a fictional family for demonstrations.
 
 | What the school has | Teacher setup | Student experience |
 | --- | --- | --- |
@@ -123,7 +143,7 @@ Public defaults can go in `docs/config.js` so first-time visitors see the school
 | Time | Teacher and student actions on a phone | Evidence to collect |
 | --- | --- | --- |
 | 0–3 min | Open **Practice → Storm lab → Source notes**. Identify what both trays shared and what the field club changed. | Point to the 200 mL treatment and the 45 and 120 mL runoff measurements. |
-| 3–7 min | Choose A on question one and tap **Check answer**. Read the hint and refresh. Choose C, tap **Check second answer**, then read the source quotation. Answer B, D and A for the remaining questions. | The first missed choice survives reload. The result is **3/4** correct on the first try and **1** recovered after a hint. Ask students to explain both figures. |
+| 3–7 min | Choose A on question one and tap **Check answer**. Read the hint, refresh and select **Open saved quiz**. Choose C, tap **Check second answer**, then read the source quotation. Answer B, D and A for the remaining questions. | The first missed choice survives reload. The result is **3/4** correct on the first try and **1** recovered after a hint. Ask students to explain both figures. |
 | 7–10 min | Choose **Retry missed questions**, answer C and finish at 1/1. Open **Progress → Export learning record**. Locate both choices and the quote. Let a partner start **Practice → Soundcheck**. | The music example lets the class distinguish an echo timing from an audience preference. Both decks carry the prepared label. |
 | 10–15 min, with a model | Open **Notebook**, paste a student’s material and select **Generate quiz from notes**. Submit an answer and select **Ask why**. Ask which sentence supports the explanation, then ask about an unmeasured quantity. | The student can check the source used to create the question and identify a claim the notebook does not support. |
 
@@ -254,3 +274,7 @@ The dashed map line shows stop order. Select a letter or number, or use the plac
 The [age-by-age walkthrough](STUDENT_WALKTHROUGH.md) records tasks, observed outcomes and limits. Ages 13–14 covered recalling the class's own observations, correcting a wrong choice, tapping a map pin and moving a closed museum to the next day. Ages 15–16 switched subjects, reopened an archived quiz, checked an explicit July date, reordered a visit and balanced a day budget. A 17-year-old scenario tested delayed feedback, a notebook backup and official weather coverage. The 18-year-old Atlas scenario checked dated room inventory and opened a read-only family itinerary. These were developer-run scenarios in Edge. The class model and real-device Safari remain open checks.
 
 We used GitHub **Add file → Upload files → Choose your files** in `docs` for the updated modules, then in `docs/study` and `docs/travel` for each entry page. The root upload includes both teacher guides, the curriculum, README, the walkthrough and the teacher relay's updated asset list. Each upload used **Commit summary → Commit changes** on `main`. Use **Actions → pages build and deployment** to find the result. [App fixes](https://github.com/si9257/integem-ai-camp-labs/commit/b59eb5661ea6444701945701b71bb666474aa8e3) · [Student app deployment #23](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45604892841)
+
+### Paper practice and generation feedback release
+
+We uploaded the modules in `docs` and each app’s entry page through GitHub **Add file → Upload files → Choose your files** on `main`. We checked the public deployment under **Actions → pages build and deployment**. An Edge notebook retained all 36,790 characters after reloading. A delayed local test response exercised section progress, streaming, cancellation, failure recovery and itinerary adoption. Use section 6 to check the real classroom model separately. [Feature commit](https://github.com/si9257/integem-ai-camp-labs/commit/01eb3c9a67e00f3cb518d4409fbdb61bc8d8e098) · [Deployment of both entry pages #27](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45635959074)
