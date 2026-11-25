@@ -1,4 +1,4 @@
-import { el, $, init, t, coverURL } from "./common.js";
+import { el, $, init, t, coverURL, asset } from "./app-ui.js";
 init("home");
 function course(path, art, meta, title, description, action) {
   return el(
@@ -7,7 +7,12 @@ function course(path, art, meta, title, description, action) {
     el(
       "div",
       { cls: "course-image" },
-      el("img", { src: coverURL(art), width: 768, height: 512, alt: "" })
+      el("img", {
+        src: art === "study" ? asset("study-deck.webp") : coverURL(art),
+        width: 768,
+        height: 512,
+        alt: "",
+      })
     ),
     el(
       "div",
