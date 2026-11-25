@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+*.key
+node_modules/
+publish-record-*.md
+playwright-report/
+.DS_Store
+Thumbs.db
