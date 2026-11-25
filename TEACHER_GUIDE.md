@@ -9,6 +9,8 @@
 
 学生打开网址即可使用，默认英文，右上角可切换中文。第一堂课可以先做预置题或手动规划。要演示根据任意笔记出题、导师追问和 AI 行程，请先完成下文的 AI 配置。
 
+手机底栏分别是 **Practice / Notebook / Tutor / Progress** 和 **Explore / Map / My trip / Weather**。右上角滑杆图标打开 **AI settings**。课堂备课可从[中英逐日课表](DAILY_CURRICULUM.md)挑选当天的学生任务。
+
 ## 1　从一个新 GitHub 账号到公开仓库
 
 1. 在用于授课的浏览器打开 [GitHub Dashboard](https://github.com/dashboard)。需要时在 GitHub 页面输入账号、密码和验证码。看欢迎语中的用户名，或点右上角头像核对账号。本次实际使用了教师在 **Edge** 已登录的标签。内置浏览器的登录交接未能在教师侧显示。Edge 的欢迎语显示 **si9257**，当时仓库区显示 **No repositories found**。
@@ -38,7 +40,7 @@
 3. 在根目录用 **Create new file** 添加 `.gitignore`。再在根目录用 **Upload files** 提交 `relay.mjs`、`server.env.example` 和 `README.md`，最后上传两份教师教程。首页只加载 `docs/` 内的静态文件，转发程序位于其外。
 4. 本次自动操作 Edge 的文件选择器时，老师在 **Edge 扩展 → ChatGPT → 详细信息 → 允许访问文件 URL** 开启了权限。老师自己点击 GitHub 的文件选择器上传时，可以直接选文件。每次核对页面标题中的目标目录和待提交文件名。真实 `.env` 留在本机，网页上传也要手动避开它。
 
-复刻当前版本时，在第 2 步一起上传 `city-map.js`、`cover-study.webp`、`cover-sf.webp`、`cover-sea.webp` 和 `cover-dc.webp`。四张封面对应学习桌、旧金山、西雅图及华盛顿特区。完整的 `docs/` 直属文件共 16 个，另有两个课程子目录入口。
+复刻手机版时，先在仓库点 **Code → Download ZIP** 并解压。按解压包内的相对目录上传完整 `docs/`。学员页需要 `mobile.css`、`app-ui.js`、学习题库 `decks.js`、作答逻辑 `round.js`、只读旅行页 `family.js`、两份 `.webmanifest` 和所有 PNG、WebP 文件。两个子目录各有自己的 `index.html`。`DAILY_CURRICULUM.md` 和教师手册放在仓库根目录。
 
 ## 3　开启 Pages 并找到网址
 
@@ -97,32 +99,35 @@ location = /v1/chat/completions {
 
 ## 5　第一堂课怎么演示
 
-### 一周班：Study Desk（约 15 分钟）
+### 一周班 · Study Desk（15 分钟）
 
-| 时间 | 老师操作 | 给学生的问题 |
+| 时间 | 老师和学生在手机上做什么 | 当场验收 |
 | --- | --- | --- |
-| 0–3 分钟 | 点 **Load example notes**。一起读两个托盘实验，找出相同条件和被改变的条件。 | “两个杯子里分别有多少径流？笔记能回答蒸发量吗？” |
-| 3–7 分钟 | 点 **Try prepared practice**。第一题故意选 A，点 **Check answer**，读出正确答案和原文。刷新，再继续。余下三题选 B、D、A。 | “哪个证据能推翻刚刚的选择？”这次结果应为 3/4。 |
-| 7–10 分钟 | 点 **Retry missed questions**，选 C，完成一题并看到 1/1。打开 **Learning record → Export learning record**，打开 Markdown 找到两轮成绩。 | “第一次与第二次作答各留下了什么？” |
-| 10–15 分钟（需 AI） | 粘贴学生自己的短笔记，点 **Generate quiz from notes**。答一题后点 **Ask why**，连续问“为什么我这题错了？”和“哪一句支持你的解释？”。再问一项原文未测量的数据。 | “导师引用了哪一句？资料不足时，它怎样说明？” |
+| 0–3 分钟 | 打开 **Practice → Storm lab**。在 **Source notes** 中读托盘实验，找出两盘相同的条件和主动改变的条件。 | 学生从原文指出每盘浇水 200 mL，收集的径流分别是 45 和 120 mL。 |
+| 3–7 分钟 | 第一题故意选 A，点 **Check answer**。先读提示，刷新；再选 C，点 **Check second answer**，核对引用。余下三题选 B、D、A。 | 刷新后仍停在首次错答。完成后首答成绩为 **3/4**，**Recovered after a hint** 为 **1**。让学生解释这两个数字各代表什么。 |
+| 7–10 分钟 | 点 **Retry missed questions**，选 C，查到 1/1。打开 **Progress → Export learning record**，找出首次选择、第二次选择和原文。换到 **Practice → Soundcheck**，让另一位学生解释乐队实验测了什么。 | 学生能区分“实验测了回声多久”和“听众更喜欢哪一遍”。两套练习均标为预置。 |
+| 10–15 分钟（需模型） | 在 **Notebook** 粘贴学生自己的材料，点 **Generate quiz from notes**。提交答案后点 **Ask why**，连续问“哪一句支持这个解释？”和一个原文没有回答的问题。 | 学生能打开出题时的原文，核对导师所引用的句子，并指出哪项缺少证据。 |
 
-建议一周进度：第 1 天完成学生流程；第 2 天制作输入和保存；第 3 天设计出题格式与证据检查；第 4 天把作答接入导师；第 5 天请同学交叉测试并演示。
+周四原型打磨可以直接用“答错 → 看提示 → 再选一次 → 看原文”做验收用例。周五让同学临时换一个主题，检验学生的作品能否处理新材料。[一周五天逐日任务和验收](DAILY_CURRICULUM.md)
 
-### 两周班：Field Trip Atlas（约 20 分钟）
+### 两周班 · Field Trip Atlas（20 分钟）
 
-| 时间 | 老师操作 | 要观察的证据 |
+| 时间 | 老师和学生在手机上做什么 | 当场验收 |
 | --- | --- | --- |
-| 0–4 分钟 | 展开 **Trip brief**，点 **Use family example**，或输入“带两个孩子去旧金山玩两天，喜欢科学，下雨想安排室内活动”。选 **Apply trip brief**，调整日期和预算。 | 目的地、天数、兴趣会体现出来，表单仍可改。 |
-| 4–8 分钟 | 打开 **Weather**，看 **Weather window** 的来源、覆盖期、温度单位、NWS 更新时间和获取时间。把日期改到几个月后，再改回来。 | 超出预报范围会逐日提示。夜间时段可能横跨两日，卡片上列有起止时间。NWS 原文保留英文。 |
-| 8–13 分钟 | 在 **Explore → Planning for** 选第 1 天。点 Exploratorium 的 **Show on map → Add to day 1**，再加 California Academy of Sciences。到 **Itinerary** 用 ↑ 换序。到 **Map → Fit day** 看标记 1、2，再给第 2 天另加一站。 | 刷新后顺序和日期仍在。**Export itinerary** 中有景点官网、单站地图链接和当次天气来源。 |
-| 13–20 分钟（需 AI） | 点 **Plan with AI**。已有人工作品时会先询问是否替换所选日期。检查每一天的景点和理由，再手动调整。 | 对照 4 张官方景点卡和当日预报，解释一项室内选择。预算或通行条件需到场馆官网核实。 |
+| 0–4 分钟 | 点城市封面上的 **Edit trip → Use family example → Apply trip brief**。选旧金山、两天，设定日期，点 **Done**。 | 在首屏找到当天、天气入口和景点。让学生用 **Indoors / Outdoors** 判断哪两站能作为雨天候选。 |
+| 4–8 分钟 | 点底栏 **Weather**，找出 NWS 网格来源、预报覆盖日期、单位和更新时间。把出发日临时改到两个月后，再换回。 | 学生展示预报范围外的逐日提示。有缓存时，读出获取时间。 |
+| 8–14 分钟 | 在 **Explore** 选第 1 天，用景点卡的 **＋** 加入 Presidio Tunnel Tops、Golden Gate Park。到 **My trip**，点第一站的 **Indoor alternatives**，对照两个场馆简介与官网，选 Exploratorium，点 **Replace this stop**。 | 第 2 站仍是 Golden Gate Park。用 ↑ 把它移到最前，再到 **Map → Fit day** 检查 1、2 两个图钉，刷新复核。 |
+| 14–17 分钟 | 在 **My trip → Family link** 点 **Preview family view**。再回到学生端用 **Export itinerary** 下载可留存的 Markdown。 | 家长可在另一部手机打开链接，无需账号，能切日期、查官网和单站地图。链接记录分享时的城市、日期和景点顺序，修改后可生成新版。预算、家庭描述和班级凭证不进入分享链接。 |
+| 17–20 分钟（需模型） | 在 **Explore** 点 **Plan with AI**。已有手动行程时先核对是否替换。请一位家长临时改兴趣，再由学生解释并调整一站。 | 核对当日每一站的 ID 来自当前城市的已查证景点，理由能在偏好或可用预报中找到依据。 |
 
-建议两周进度：第 1 周完成需求、三个城市的来源表、地点卡、NWS 查询、缓存与失败状态。第 2 周完成结构化提示词、受限景点与理由校验、每日编辑、移动端验收和家庭演示。
+投屏时可直接打开[旧金山两日家庭展示样例](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sf~2026-11-29~golden-gate.exploratorium~academy.tunnel-tops)。这份手工样例第一天去 Golden Gate Park 和 Exploratorium，第二天去 California Academy of Sciences 和 Presidio Tunnel Tops。家长可用它练习切换日期和查看场馆地图。
+
+第一周可让学生亲手写室内筛选、连接图钉与行程；第二周用“只替换一站”检验日期、顺序和地图是否一致。每日有单独的代码或测试产出。[两周十天逐日任务和验收](DAILY_CURRICULUM.md)
 
 ### 用地图讲“先去哪一站”
 
 1. 选 **Seattle → Map → Fit city**。让学生从四个字母标记中找到 Seattle Aquarium 和 Pacific Science Center，分别点标记、读名称，然后按 **Add to day 1**。
-2. 打开 **Itinerary** 调换两站顺序，再选 **Map → Fit day**。数字和虚线显示所选日期的游览顺序。场馆图钉标在代表位置；实际步行路线、入口和无障碍通道请核对场馆官网。
+2. 打开 **My trip** 调换两站顺序，再选 **Map → Fit day**。数字和虚线显示所选日期的游览顺序。场馆图钉标在代表位置；实际步行路线、入口和无障碍通道请核对场馆官网。
 3. 手机可用 **Map** 单独查看地图，拖动平移，用双指或 **+ / −** 缩放。桌面也支持点入地图后用方向键和加减键。展开标记详情中的 **OpenStreetMap ↗** 可查看该地点；导出的 Markdown 同样附有地点链接。
 
 学生打开地图即可使用，无需地图账号、Key 或位置权限。地图向 OpenStreetMap 请求当前视野内的街道图块，并在图下显示署名。公共服务为尽力提供，班级按需浏览即可；请勿批量下载、预取或制作离线瓦片包。学校网络需能访问 `tile.openstreetmap.org`。街道加载失败时，可用 **Retry map** 或继续按景点标记和列表排程。[地图数据和署名](https://www.openstreetmap.org/copyright) · [官方图块使用政策](https://operations.osmfoundation.org/policies/tiles/)
@@ -131,8 +136,8 @@ location = /v1/chat/completions {
 
 **本次发布时：真实模型返回待填 Key 后验证。** 可以预先打开两个作品，在各页输入短期凭证。以下操作约一分钟可发起两次调用，返回时间取决于模型。
 
-1. **Study Desk**：加载示例，将一个实验数值改为自己选的新值，再点 **Generate quiz from notes**。应看到 **AI-generated quiz**。答一题，核对引用确实来自修改后的笔记。再点 **Ask why** 提一个后续问题。预置练习单独标记，不能代替此项。
-2. **Field Trip Atlas**：用家庭示例，选择预报覆盖内的两天，点 **Plan with AI**。应出现 **AI itinerary saved**，有两个日期，每站均在当城手册中，理由符合给出的兴趣或天气。改顺序并导出。
+1. **Study Desk**：打开 **Notebook → Load example notes**，将一个实验数值改为自己选的新值，再点 **Generate quiz from notes**。应看到 **AI-generated quiz**。答一题，核对引用确实来自修改后的笔记。再点 **Ask why** 提一个后续问题。预置练习单独标记，不能代替此项。
+2. **Field Trip Atlas**：在 **Edit trip** 使用家庭示例，选择预报覆盖内的两天，点 **Plan with AI**。应出现 **AI itinerary saved**，有两个日期，每站均在当城手册中，理由符合给出的兴趣或天气。改顺序并导出。
 3. 教师需要检查调用时，可在浏览器开发者工具 **Network** 只查看 `chat/completions` 的状态、模型名与返回结构。成功证据是 HTTP 200、真实 `choices[0].message.content` 和页面中的新内容。授权请求头与笔记不用于公开截图。
 
 ## 7　更新、部署检查和恢复上一版
@@ -183,4 +188,12 @@ git push origin main
 | 转发程序 | Node.js 24.22.3 启动成功。请求处理器测试覆盖静态入口、CORS、无 Key、临时凭证和过期、模型过滤、目标路径、班级限额。上游为本机测试替身。受执行环境回环连接限制，本次 Edge 到本机端口的端到端访问未通过，应在授课电脑按第 4 节复核。 |
 | 真实 AI | 两个网站均未提供真实凭证。出题、连续追问和 AI 旅行规划按第 6 节验收。 |
 
-学生任务与景点简介由 Integem 原创。四张 AI 辅助创作的封面插画存放在项目内；城市插画用于辨识目的地，街道与地点坐标可在互动地图核对。景点卡链接到场馆官网，地图署名为 © OpenStreetMap contributors。天气取自美国国家气象局官方返回，页面提供来源、时区和更新时间。[NWS API 说明](https://www.weather.gov/documentation/services-web-api) · [NWS 使用说明](https://www.weather.gov/disclaimer) · [GitHub Pages 发布源说明](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+学生任务与景点简介由 Integem 原创。三张城市封面、学习主题插画和十二张单站插画均随项目本地加载；城市插画用于辨识目的地，街道与地点坐标可在互动地图核对。景点卡链接到场馆官网，地图署名为 © OpenStreetMap contributors。天气取自美国国家气象局官方返回，页面提供来源、时区和更新时间。[NWS API 说明](https://www.weather.gov/documentation/services-web-api) · [NWS 使用说明](https://www.weather.gov/disclaimer) · [GitHub Pages 发布源说明](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+### 手机版发布与本次课堂验收
+
+通过 **Add file → Upload files → Choose your files** 将 28 个移动端程序和素材文件提交到 `docs/`。随后分别进入两个课程子目录更新入口页。手机版主要代码为 [7ea4187](https://github.com/si9257/integem-ai-camp-labs/commit/7ea4187f41179ed09361bbed60576c80878b2534)，学习入口为 [265c41d](https://github.com/si9257/integem-ai-camp-labs/commit/265c41dd02615945e2e82f2b1a06f72523f8d34b)，旅行入口为 [3931d42](https://github.com/si9257/integem-ai-camp-labs/commit/3931d42ba684d2e7b58e3ee88372b18721373442)。包含两份入口的 [Pages 部署 #11](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45580488062) 显示成功。随后在 [5dd3103](https://github.com/si9257/integem-ai-camp-labs/commit/5dd31035fe9b5cce5f6ea6f9670375ee8e7f46cd) 改进了键盘跳到正文时的导航和中英文日期标签。
+
+- Edge 手机视口实测，Storm lab 首次错选 A 后只显示提示；刷新后选 C，完成全套得 3/4，提示后答对 1 题。重练错题得 1/1。下载的 Markdown 记录包含两次选择。小屏可展开题目原文和 AI 设置。
+- 旅行页在旧金山、华盛顿和西雅图之间切换成功。11 月 29 日的旧金山行程把第一站更换为 Exploratorium，第二站保持 Golden Gate Park。调换顺序后，地图与刷新后的列表一致。天气页显示 NWS MTR/85,105 网格及 11 月 25 日至 12 月 1 日的覆盖日期。选择次年夏日会提示超出范围。
+- 在另一个标签打开只读家庭链接，看到了正确的两站、场馆官网及单站地图，第二天为空；英文、中文两种界面均可切换。下载的旅行 Markdown 包含两日、正确顺序及 NWS 来源。手机用 360 和 390 像素宽度检查，地图另在 768 和 1280 像素宽度检查。测试在 Edge 调整视口完成。真机安装和真实模型返回另行验证。

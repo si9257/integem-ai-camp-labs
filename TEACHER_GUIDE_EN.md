@@ -9,6 +9,8 @@
 
 Students open a link without signing into GitHub. Both projects start in English. The header’s **中文** button switches the interface on that device. You can teach the prepared quiz, live weather and manual planning before connecting a model.
 
+On a phone, the bottom tabs are **Practice / Notebook / Tutor / Progress** and **Explore / Map / My trip / Weather**. The sliders icon opens **AI settings**. The [bilingual daily curriculum](DAILY_CURRICULUM.md#english-teacher-edition) includes the five-day and ten-day teaching sequences.
+
 ## 1. Start with a new GitHub account
 
 1. Open the [GitHub Dashboard](https://github.com/dashboard). If prompted, enter credentials and verification codes on the GitHub page. Check the welcome line or the avatar menu. For this release the teacher had already signed into **Edge**. The in-app browser handoff had not appeared on the teacher’s screen. Edge displayed **Welcome to GitHub, si9257!** and **No repositories found**.
@@ -38,7 +40,7 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 3. At repository root, use **Create new file** for `.gitignore`. Use **Upload files** for `relay.mjs`, `server.env.example` and `README.md`, then for the two guides. Only the files in `docs/` are published as the student sites.
 4. During this release the teacher enabled **Edge extensions → ChatGPT → Details → Allow access to file URLs** so the extension could use the file chooser. For a manual upload, use GitHub’s chooser directly. Check the displayed destination folder and the names in each batch. Only the blank environment example belongs in an upload.
 
-To reproduce the current release, also select `city-map.js`, `cover-study.webp`, `cover-sf.webp`, `cover-sea.webp` and `cover-dc.webp` in step 2. The four covers represent Study Desk and the three cities. There are 16 direct files in `docs/`, plus the two course entry pages in their subdirectories.
+To reproduce the mobile release, use **Code → Download ZIP**, extract it, then upload the complete `docs/` tree with the same relative paths. Keep `mobile.css`, `app-ui.js`, the practice decks in `decks.js`, answer handling in `round.js`, the read-only trip in `family.js`, both `.webmanifest` files and all PNG and WebP assets. Each course directory has its own `index.html`. Put `DAILY_CURRICULUM.md` and the guides at repository root.
 
 ## 3. Turn on GitHub Pages
 
@@ -99,30 +101,33 @@ Public defaults can go in `docs/config.js` so first-time visitors see the school
 
 ### Study Desk · 15 minutes
 
-| Time | Teacher action | Ask the class |
+| Time | Teacher and student actions on a phone | Evidence to collect |
 | --- | --- | --- |
-| 0–3 min | **Load example notes**. Read the two-tray field experiment. Identify the set-up, the change and the measurements. | “What do the cups tell us? Did anyone measure evaporation?” |
-| 3–7 min | **Try prepared practice**. Deliberately choose A on question one, then **Check answer**. Read the quotation, refresh and continue. Answer B, D, A for the remaining three. | “Which line challenges our first answer?” The score should be 3/4. |
-| 7–10 min | **Retry missed questions**, answer C, finish with 1/1 and open **Learning record → Export learning record**. Open the Markdown. | “What can you find from the first attempt and the retry?” |
-| 10–15 min, with AI | Paste a learner’s short notes, **Generate quiz from notes**, answer one and select **Ask why**. Ask why the response was wrong, then ask which line supports the reasoning. Ask about a measurement absent from the notes. | “Did the tutor cite the correct source? How did it handle missing evidence?” |
+| 0–3 min | Open **Practice → Storm lab → Source notes**. Identify what both trays shared and what the field club changed. | Point to the 200 mL treatment and the 45 and 120 mL runoff measurements. |
+| 3–7 min | Choose A on question one and tap **Check answer**. Read the hint and refresh. Choose C, tap **Check second answer**, then read the source quotation. Answer B, D and A for the remaining questions. | The first missed choice survives reload. The result is **3/4** correct on the first try and **1** recovered after a hint. Ask students to explain both figures. |
+| 7–10 min | Choose **Retry missed questions**, answer C and finish at 1/1. Open **Progress → Export learning record**. Locate both choices and the quote. Let a partner start **Practice → Soundcheck**. | The music example lets the class distinguish an echo timing from an audience preference. Both decks carry the prepared label. |
+| 10–15 min, with a model | Open **Notebook**, paste a student’s material and select **Generate quiz from notes**. Submit an answer and select **Ask why**. Ask which sentence supports the explanation, then ask about an unmeasured quantity. | The student can check the source used to create the question and identify a claim the notebook does not support. |
 
-A five-day build can cover the student journey on day one, input and persistence on day two, structured questions and citation checking on day three, contextual tutoring on day four, and peer testing and presentation on day five.
+For Thursday’s prototype test, give a classmate a wrong choice and ask them to recover with one hint. For Friday’s demo, introduce fresh material and ask the student to explain a design decision. [Five-day studio schedule](DAILY_CURRICULUM.md#english-teacher-edition)
 
 ### Field Trip Atlas · 20 minutes
 
-| Time | Teacher action | Evidence to examine |
+| Time | Teacher and student actions on a phone | Evidence to collect |
 | --- | --- | --- |
-| 0–4 min | Expand **Trip brief**, select **Use family example**, or type “Two days in San Francisco with two kids. We like science and want indoor activities if it rains.” Use **Apply trip brief**, then adjust dates and budget. | The destination, duration and interests are reflected in editable controls. |
-| 4–8 min | Open **Weather** and read **Weather window**. Identify source, coverage, temperature unit, NWS update time and retrieval time. Select a date several months away, then restore a covered date. | The app labels uncovered days. Night periods can span midnight and show their start and end. Official forecast wording remains in English. |
-| 8–13 min | In **Explore → Planning for**, choose the first day. On the Exploratorium card, choose **Show on map → Add to day 1**. Add the California Academy of Sciences, switch their order in **Itinerary**, then inspect **Map → Fit day**. Add a stop to day two and export the itinerary. | Day, order and source links remain. The export includes the weather source and each stop’s map link. |
-| 13–20 min, with AI | **Plan with AI**. If there are existing stops the app asks whether to replace the selected dates. Check a reason each day, then edit the plan manually. | Match each stop to a verified card, explain an indoor choice and check practical details with the venue. |
+| 0–4 min | From the city cover open **Edit trip → Use family example → Apply trip brief**. Choose San Francisco, two days and the travel date, then **Done**. | Locate the selected day, forecast shortcut and venue cards. Compare **Indoors** and **Outdoors**. |
+| 4–8 min | Open **Weather**. Find the NWS grid, coverage dates, units and update time. Move the trip two months ahead and back. | Show the explicit out-of-range message. If the browser uses a cached forecast, read its retrieval time. |
+| 8–14 min | In **Explore**, choose day one and use the **＋** buttons to add Presidio Tunnel Tops and Golden Gate Park. In **My trip**, pick **Indoor alternatives** on the first stop. Compare both venue descriptions and official links, choose Exploratorium and tap **Replace this stop**. | Golden Gate Park is still second. Move it up one slot, open **Map → Fit day** and verify pins 1 and 2. Reload to check the order. |
+| 14–17 min | Select **My trip → Family link → Preview family view**. Return to the planner and choose **Export itinerary**. | A parent can use the link on another phone, switch days and open venue or map links without an account. A link captures the current city, dates and stop order. Make a fresh link after editing. The private brief, budget and class credential stay out of the link. |
+| 17–20 min, with a model | From **Explore** select **Plan with AI**. Review the confirmation when the selected dates already contain stops. Ask a parent to change an interest, then have the student adapt a stop. | Each stop belongs to the verified city list. Students explain a reason using preferences or the available forecast. |
 
-Use week one for the family brief, a three-city source catalog, place cards, NWS lookups and cache/failure handling. Use week two for constrained AI output, place and reason validation, day editing, mobile tests and family presentations.
+For the showcase, open the [two-day San Francisco family example](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sf~2026-11-29~golden-gate.exploratorium~academy.tunnel-tops). This manually planned snapshot visits Golden Gate Park and Exploratorium on day one, then the California Academy of Sciences and Presidio Tunnel Tops on day two.
+
+In week one, students write an indoor filter and connect map pins to itinerary IDs. In week two, they test a one-stop replacement against the day, position and map. [Ten-day engineering schedule](DAILY_CURRICULUM.md#english-teacher-edition)
 
 ### Teach visit order with the map
 
 1. Choose **Seattle → Map → Fit city**. Ask students to find Seattle Aquarium and Pacific Science Center among the four lettered pins. Select each pin, read its label and choose **Add to day 1**.
-2. Swap the stops in **Itinerary**, then select **Map → Fit day**. The numbers and dashed line show the visit order for the selected day. Pins represent venues. Check the operator’s site for walking directions, entrances and accessible routes.
+2. Swap the stops in **My trip**, then select **Map → Fit day**. The numbers and dashed line show the visit order for the selected day. Pins represent venues. Check the operator’s site for walking directions, entrances and accessible routes.
 3. On a phone, select **Map** for a dedicated view. Drag to pan and pinch or use **+ / −** to zoom. A keyboard user can focus the map, pan with arrow keys and zoom with plus and minus. The selected place includes **OpenStreetMap ↗**. An exported itinerary includes each stop’s map link too.
 
 Students can open the map without an account, key or device-location permission. The browser requests visible street tiles from OpenStreetMap and displays attribution beneath the map. Its community-operated tile service is best effort. Use it interactively and avoid bulk downloads, prefetching or offline tile packs. The school network needs access to `tile.openstreetmap.org`. If streets fail to load, use **Retry map** or keep planning with the pins and place list. [Map data and attribution](https://www.openstreetmap.org/copyright) · [Official tile usage policy](https://operations.osmfoundation.org/policies/tiles/)
@@ -131,8 +136,8 @@ Students can open the map without an account, key or device-location permission.
 
 **Real model responses are pending credentials.** Open both tabs and enter the short-lived credential on each first. These steps take about a minute to initiate. Allow the provider time to return its answers.
 
-1. **Study Desk**: Load the sample, change a measured number to a value of your choice, then **Generate quiz from notes**. Look for **AI-generated quiz**, answer a question and cross-check its quotation against the edited source. Try a follow-up with **Ask why**. Prepared practice has a separate label.
-2. **Field Trip Atlas**: Load the family example, select two covered dates and choose **Plan with AI**. Look for **AI itinerary saved**, a section for each date, and reasons attached to verified places. Reorder a stop and export.
+1. **Study Desk**: Open **Notebook → Load example notes**, change a measured number to a value of your choice, then **Generate quiz from notes**. Look for **AI-generated quiz**, answer a question and cross-check its quotation against the edited source. Try a follow-up with **Ask why**. Prepared practice has a separate label.
+2. **Field Trip Atlas**: In **Edit trip**, load the family example, select two covered dates and choose **Plan with AI**. Look for **AI itinerary saved**, a section for each date, and reasons attached to verified places. Reorder a stop and export.
 3. For network-level confirmation use browser developer tools → **Network**. Check the status of `chat/completions`, model ID and response shape. Evidence includes HTTP 200, actual `choices[0].message.content` and newly rendered content. Keep authorization headers and student notes out of shared screenshots.
 
 ## 7. Update a project or recover a previous version
@@ -183,4 +188,12 @@ git push origin main
 | Teacher relay | Node.js 24.22.3 started the relay. In-process request tests covered the static paths, CORS, missing provider key, class authentication and expiry, model restriction, upstream request path and rate cap, using an upstream test fixture. The test environment restricted loopback connections and its Edge-to-localhost check timed out. Recheck on the classroom computer using section 4. |
 | Live model | A real credential was not supplied. Section 6 covers actual quiz generation, contextual follow-ups and AI trip generation. |
 
-Integem created the classroom activities, venue descriptions and four AI-assisted cover illustrations. The covers ship with the project. Use the interactive map for geographic detail, and follow each place card to the operator’s website. The map credits © OpenStreetMap contributors. NWS supplies the forecast, which shows its source, time zone and update time. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+Integem created the classroom activities, venue descriptions and AI-assisted illustrations. The three city covers, study artwork and twelve individual venue illustrations ship with the project. Use the interactive map for geographic detail, and follow each place card to the operator’s website. The map credits © OpenStreetMap contributors. NWS supplies the forecast, which shows its source, time zone and update time. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+### Mobile release and classroom acceptance
+
+We used **Add file → Upload files → Choose your files** to place 28 mobile app and artwork files in `docs/`, then opened each course subdirectory to update its entry. The shared release is [7ea4187](https://github.com/si9257/integem-ai-camp-labs/commit/7ea4187f41179ed09361bbed60576c80878b2534), the study entry is [265c41d](https://github.com/si9257/integem-ai-camp-labs/commit/265c41dd02615945e2e82f2b1a06f72523f8d34b), and the travel entry is [3931d42](https://github.com/si9257/integem-ai-camp-labs/commit/3931d42ba684d2e7b58e3ee88372b18721373442). [Pages deployment #11](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45580488062) succeeded with both entries. [5dd3103](https://github.com/si9257/integem-ai-camp-labs/commit/5dd31035fe9b5cce5f6ea6f9670375ee8e7f46cd) then refined keyboard navigation and bilingual day labels.
+
+- In the mobile viewport we chose A on the first Storm lab question, read the hint, refreshed and corrected the answer with C. The finished round showed 3/4 on the first try and one recovered after a hint. The missed-only round scored 1/1. The downloaded Markdown kept both attempts. The source sheet and AI connection dialog fit the phone width.
+- We switched among San Francisco, Seattle and Washington, DC. In a November 29 San Francisco plan we replaced the first outdoor stop with Exploratorium and kept Golden Gate Park in second position. After reordering, the map and the reloaded list agreed. The weather screen showed NWS grid MTR/85,105 and coverage from November 25 to December 1. A summer date in the following year displayed the explicit out-of-range message.
+- A separate tab opened a read-only family link with two correctly ordered stops, operator sites, map links and an empty second day. English and Chinese both worked. The downloaded trip included both dates, order and NWS source. We checked 360- and 390-pixel phone widths, plus 768- and 1280-pixel map layouts in Edge. Physical-device installation and real model responses still require a separate check.

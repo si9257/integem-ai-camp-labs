@@ -63,6 +63,8 @@ const contentTypes = {
   html: "text/html",
   css: "text/css",
   webp: "image/webp",
+  png: "image/png",
+  webmanifest: "application/manifest+json",
   js: "text/javascript",
 };
 const files = new Set([
@@ -77,6 +79,31 @@ const files = new Set([
   "study.js",
   "places.js",
   "city-map.js",
+  "mobile.css",
+  "app-ui.js",
+  "family.js",
+  "round.js",
+  "decks.js",
+  "study-deck.webp",
+  "app-glyphs.png",
+  "study.webmanifest",
+  "travel.webmanifest",
+  "study-icon-192.png",
+  "study-icon-512.png",
+  "travel-icon-192.png",
+  "travel-icon-512.png",
+  "place-exploratorium.webp",
+  "place-academy.webp",
+  "place-tunnel-tops.webp",
+  "place-golden-gate.webp",
+  "place-flight.webp",
+  "place-pacsci.webp",
+  "place-sculpture.webp",
+  "place-aquarium.webp",
+  "place-natural-history.webp",
+  "place-air-space.webp",
+  "place-conservatory.webp",
+  "place-lincoln.webp",
   "cover-study.webp",
   "cover-sf.webp",
   "cover-sea.webp",
@@ -262,7 +289,7 @@ export async function handleRequest(req, res) {
     res.writeHead(200, {
       "Content-Type":
         contentTypes[file.split(".").pop()] +
-        (file.endsWith(".webp") ? "" : "; charset=utf-8"),
+        (/\.(webp|png)$/.test(file) ? "" : "; charset=utf-8"),
       "Cache-Control": "no-cache",
     });
     res.end(req.method === "HEAD" ? "" : body);
