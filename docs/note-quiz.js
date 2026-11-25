@@ -1,14 +1,15 @@
 import { lang, t, parseJSON } from "./common.js";
 
 // Keep every character, including paragraph separators. Prefer natural breaks.
-export function noteSections(text, width = 7600) {
+export const sectionWidth = 7600;
+export function noteSections(text, width = sectionWidth) {
   const sections = [];
   for (let start = 0; start < text.length; ) {
     let end = Math.min(text.length, start + width);
     if (end < text.length) {
       const floor = start + Math.floor(width * 0.55);
-      const newline = text.lastIndexOf("\n", end - 1);
-      if (newline >= floor) end = newline + 1;
+      const newline = text.slice(floor, end).lastIndexOf("\n");
+      if (newline >= 0) end = floor + newline + 1;
       else {
         const tail = text.slice(floor, end),
           boundaries = [

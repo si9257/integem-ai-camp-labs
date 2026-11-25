@@ -50,7 +50,11 @@ import {
 } from "./recall-ui.js?v=paper1";
 import { openStudyStore } from "./study-store.js";
 import { startGeneration } from "./generation.js";
-import { makeNotebookQuiz, tutorSource } from "./note-quiz.js";
+import {
+  makeNotebookQuiz,
+  tutorSource,
+  sectionWidth,
+} from "./note-quiz.js?v=paper2";
 import { printStudio } from "./study-print.js";
 init("study", openAISettings);
 if (!document.querySelector("link[data-study-studio]"))
@@ -99,7 +103,15 @@ const noteBox = el("textarea", {
     "粘贴课堂笔记，也可以输入：术语：解释"
   ),
 });
+const longNoteHint = small(
+  t(
+    "A long notebook takes several model requests. You can follow each section as it is read.",
+    "长笔记会分段请求模型。点击出题后可以看到正在读取哪一段。"
+  )
+);
+longNoteHint.hidden = true;
 noteBox.addEventListener("input", async () => {
+  longNoteHint.hidden = noteBox.value.length <= sectionWidth;
   book().text = noteBox.value;
   book().updated = new Date().toISOString();
   const active = book().id;
@@ -404,6 +416,7 @@ const notesPanel = el(
           ])
         )
       ),
+      longNoteHint,
       aiButton,
       btn(t("Connect class AI", "连接班级 AI"), openAISettings, "subtle")
     ),
@@ -430,6 +443,7 @@ function renderNotebook() {
   );
   bookPicker.value = b.id;
   noteBox.value = b.text;
+  longNoteHint.hidden = b.text.length <= sectionWidth;
   totals.textContent =
     cards.length +
     t(cards.length === 1 ? " active card" : " active cards", " 张可练卡片");
@@ -618,12 +632,13 @@ function renderHome() {
           ? t("Review due cards", "复习到期卡片")
           : t("Open notebook", "打开笔记"),
         "arrow",
-        () =>
-          continuing
-            ? ((recallOpened = true), tabs.select("recall"))
-            : ready.length
-            ? practiceCards(ready)
-            : tabs.select("notes"),
+        () => {
+          if (continuing) {
+            recallOpened = true;
+            tabs.select("recall");
+          } else if (ready.length) practiceCards(ready);
+          else tabs.select("notes");
+        },
         "lime-button"
       )
     )

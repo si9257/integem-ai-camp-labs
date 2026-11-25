@@ -72,6 +72,7 @@ export function startGeneration(title, initial) {
   const timer = setInterval(tick, 1000);
   window.addEventListener("beforeunload", guard);
   window.addEventListener("pagehide", stop, { once: true });
+  window.addEventListener("popstate", stop, { once: true });
   dialog.addEventListener("cancel", (e) => {
     e.preventDefault();
     stop();
@@ -103,6 +104,7 @@ export function startGeneration(title, initial) {
     cancelAnimationFrame(frame);
     window.removeEventListener("beforeunload", guard);
     window.removeEventListener("pagehide", stop);
+    window.removeEventListener("popstate", stop);
     if (dialog.open) dialog.close();
     dialog.remove();
   }

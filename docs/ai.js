@@ -150,6 +150,15 @@ export function openAISettings() {
   dialog.addEventListener("close", () => dialog.remove(), { once: true });
   dialog.showModal();
 }
+function checkReplyLength(reason) {
+  if (reason === "length")
+    throw Error(
+      t(
+        "The model ran out of reply space. Use a shorter task or raise the gateway's output allowance.",
+        "模型输出空间不足，请缩短任务或提高网关的输出额度。"
+      )
+    );
+}
 async function streamReply(response, onText, heartbeat) {
   const reader = response.body.getReader(),
     decoder = new TextDecoder();
@@ -175,13 +184,7 @@ async function streamReply(response, onText, heartbeat) {
         )
       );
     const choice = packet.choices?.[0];
-    if (choice?.finish_reason === "length")
-      throw Error(
-        t(
-          "The model ran out of reply space. Try fewer questions or a larger output allowance.",
-          "模型输出空间不足，请减少题量或提高网关的输出额度。"
-        )
-      );
+    checkReplyLength(choice?.finish_reason);
     if (choice?.finish_reason === "stop") finished = true;
     if (typeof choice?.delta?.content === "string") {
       output += choice.delta.content;
@@ -325,7 +328,9 @@ export async function chat(messages, { signal, onText } = {}) {
       text = await streamReply(response, onText, heartbeat);
     } else {
       const data = await response.json();
-      text = data.choices?.[0]?.message?.content;
+      const choice = data.choices?.[0];
+      checkReplyLength(choice?.finish_reason);
+      text = choice?.message?.content;
     }
     if (typeof text !== "string" || !text.trim())
       throw Error(t("No text came back from the model.", "模型没有返回文本。"));
