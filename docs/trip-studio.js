@@ -350,13 +350,13 @@ export function createBookings(context, editTrip, selectHotel) {
       (stay.nights ? " → " + stay.checkOut : "") +
       " · " +
       stay.nights +
-      t(" nights", " 晚") +
+      t(stay.nights === 1 ? " night" : " nights", " 晚") +
       " · " +
       prefs.adults +
-      t(" adults", " 位成人") +
+      t(prefs.adults === 1 ? " adult" : " adults", " 位成人") +
       " · " +
       prefs.children +
-      t(" children", " 位儿童");
+      t(" under 18", " 位未满18岁");
     if (!stay.nights)
       rates.replaceChildren(
         small(

@@ -24,7 +24,7 @@ import {
   dateInZone,
   plusDays,
 } from "./app-ui.js";
-import { tripDate } from "./trip-brief.js";
+import { tripDate } from "./trip-brief.js?v=student5";
 import { familyLink, shareTrip, openFamily } from "./family.js";
 import { configured, openAISettings } from "./ai.js";
 import { createPlaceMap, osmPlaceURL } from "./city-map.js";
@@ -57,7 +57,7 @@ import {
   createBookings,
   costEditor,
   budgetNames,
-} from "./trip-studio.js";
+} from "./trip-studio.js?v=student5";
 import { draftWithModel } from "./trip-agent.js";
 if (!document.querySelector("link[data-trip-studio]"))
   document.head.append(
@@ -306,6 +306,8 @@ function startPlanner() {
   });
   brief.addEventListener("input", () => {
     state.brief = brief.value;
+    if (state.brief.trim() !== state.appliedBrief)
+      state.appliedBriefVersion = 0;
     composer.value = brief.value;
     changed();
   });
@@ -313,19 +315,36 @@ function startPlanner() {
     const value = brief.value.trim();
     brief.setCustomValidity("");
     composer.setCustomValidity("");
-    if (!value || value === state.appliedBrief) return true;
+    if (
+      !value ||
+      (value === state.appliedBrief && state.appliedBriefVersion === 2)
+    )
+      return true;
     const parsed = tripDate(value);
-    if (parsed.problem) {
-      const msg =
-        parsed.problem === "year"
-          ? t(
-              "Include a four-digit year in your trip brief (e.g. July 12, 2027).",
-              "请在出行描述中写明四位年份，例如 2027年7月12日。"
-            )
-          : t(
-              "That calendar date does not exist. Correct the date in your trip brief.",
-              "这个日期不存在，请修改出行描述中的日期。"
-            );
+    const ambiguousTeens =
+      /(?:teens?|teenagers?|青少年)[^.;。]{0,26}(?:age[ds]?|ages?|年龄|岁)[^.;。]{0,18}\b(?:18|19)\b/i.test(
+        value
+      );
+    if (parsed.problem || ambiguousTeens) {
+      const msg = ambiguousTeens
+        ? t(
+            "For hotel occupancy, write guests aged 18 or over as adults and list the under-18 count separately.",
+            "酒店入住人数请将已满 18 岁的旅客计为成人，并单列未满 18 岁的人数。"
+          )
+        : parsed.problem === "relative"
+        ? t(
+            "Please write a calendar date with a year in your brief so everyone uses the same travel day.",
+            "请在描述中写明含年份的日期，以便同行人确认同一个出行日。"
+          )
+        : parsed.problem === "year"
+        ? t(
+            "Include a four-digit year in your trip brief (e.g. July 12, 2027).",
+            "请在出行描述中写明四位年份，例如 2027年7月12日。"
+          )
+        : t(
+            "That calendar date does not exist. Correct the date in your trip brief.",
+            "这个日期不存在，请修改出行描述中的日期。"
+          );
       message(tripStatus, msg, true);
       brief.setCustomValidity(msg);
       composer.setCustomValidity(msg);
@@ -406,9 +425,12 @@ function startPlanner() {
       const n = Number(grown[1]) || counts[grown[1].toLowerCase()];
       if (n >= 1 && n <= 6) state.prefs.adults = n;
     }
-    if(parsed.date)state.start=parsed.date;
-    document.querySelector("[data-editor-group]")?.replaceWith(groupForEditor());
+    if (parsed.date) state.start = parsed.date;
+    document
+      .querySelector("[data-editor-group]")
+      ?.replaceWith(groupForEditor());
     state.appliedBrief = value;
+    state.appliedBriefVersion = 2;
     state.activeDay = Math.min(state.activeDay, state.days - 1);
     changed();
     rerenderTrip();
@@ -457,7 +479,15 @@ function startPlanner() {
       t(state.days === 1 ? "day" : "days", "天")
     );
   }
-  function groupForEditor(){const box=groupFields(state.prefs,()=>{changed();booking.refresh();renderPlan();});box.dataset.editorGroup="";return box;}
+  function groupForEditor() {
+    const box = groupFields(state.prefs, () => {
+      changed();
+      booking.refresh();
+      renderPlan();
+    });
+    box.dataset.editorGroup = "";
+    return box;
+  }
   function editTrip() {
     sheet(t("Edit trip", "编辑旅行"), (body, close) => {
       const done = btn(
@@ -530,6 +560,8 @@ function startPlanner() {
     ),
     oninput: (e) => {
       state.brief = brief.value = e.target.value;
+      if (state.brief.trim() !== state.appliedBrief)
+        state.appliedBriefVersion = 0;
       changed();
     },
   });
@@ -1305,7 +1337,7 @@ function startPlanner() {
               state.start +
               " · " +
               state.prefs.adults +
-              t(" adult(s)", " 位成人") +
+              t(state.prefs.adults === 1 ? " adult" : " adults", " 位成人") +
               " · " +
               state.prefs.children +
               t(" under 18", " 位未满18岁")

@@ -47,9 +47,12 @@ export function openLibrary(legacy, sample) {
 export const activeBook = (s) =>
   s.books.find((b) => b.id === s.activeBook) || s.books[0];
 export const allRounds = (s) => [...s.rounds, ...(s.quiz ? [s.quiz] : [])];
-export const bookCards = (s, id) => s.cards.filter((c) => c.bookId === id);
+export const bookCards = (s, id, includePaused = false) =>
+  s.cards.filter((c) => c.bookId === id && (includePaused || !c.paused));
 export const dueCards = (s, now = Date.now()) =>
-  s.cards.filter((c) => c.due <= now).sort((a, b) => a.due - b.due);
+  s.cards
+    .filter((c) => !c.paused && c.due <= now)
+    .sort((a, b) => a.due - b.due);
 const clean = (s) => s.trim().replace(/\s+/g, " ").toLocaleLowerCase();
 function glossary(line) {
   const match = line.match(
@@ -190,12 +193,15 @@ const shuffled = (items, rand) => {
   return a;
 };
 export function cardQuiz(cards, limit = 6, rand = Math.random) {
-  const unique = [],seen=new Set(),fronts=new Set();
+  const unique = [],
+    seen = new Set(),
+    fronts = new Set();
   for (const c of cards) {
     const k = clean(c.back);
-    const front=clean(c.front);
-    if (!seen.has(k)&&!fronts.has(front)) {
-      fronts.add(front);unique.push(c);
+    const front = clean(c.front);
+    if (!seen.has(k) && !fronts.has(front)) {
+      fronts.add(front);
+      unique.push(c);
       seen.add(k);
     }
   }
@@ -247,8 +253,9 @@ export function packBook(s, book) {
     version: 1,
     title: book.title,
     notes: book.text,
-    cards: bookCards(s, book.id).map(
-      ({ front, back, evidence, step, due, last, reviews }) => ({
+    cards: bookCards(s, book.id, true).map(
+      ({ front, back, evidence, step, due, last, reviews, paused }) => ({
+        paused: !!paused,
         front,
         back,
         evidence,
@@ -279,6 +286,7 @@ export function importBook(s, data) {
         !c.back.trim() ||
         !str(c.evidence, 1400) ||
         !c.evidence.trim() ||
+        (c.paused != null && typeof c.paused !== "boolean") ||
         !Number.isInteger(c.step) ||
         c.step < 0 ||
         c.step > 4 ||
@@ -297,7 +305,15 @@ export function importBook(s, data) {
         "请选择有效的 Study Desk 笔记本备份。"
       )
     );
-  const b = newBook(data.title, data.notes);
+  let title = data.title,
+    copy = 1;
+  while (s.books.some((b) => b.title === title)) {
+    const suffix =
+      t(" (copy", "（副本") + (copy > 1 ? " " + copy : "") + t(")", "）");
+    title = data.title.slice(0, 80 - suffix.length) + suffix;
+    copy++;
+  }
+  const b = newBook(title, data.notes);
   s.books.push(b);
   for (const c of data.cards) {
     const target = keepCard(s, b.id, b.title, c);
@@ -306,6 +322,7 @@ export function importBook(s, data) {
       due: c.due,
       last: c.last,
       reviews: c.reviews,
+      paused: c.paused === true,
     });
   }
   s.activeBook = b.id;

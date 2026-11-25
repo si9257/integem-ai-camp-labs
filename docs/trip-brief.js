@@ -3,7 +3,11 @@ const months =
     " "
   );
 const monthPart = months
-  .map((m) => m.slice(0, 3) + "(?:" + m.slice(3) + ")?")
+  .map((m) =>
+    m === "september"
+      ? "sep(?:tember|t)?"
+      : m.slice(0, 3) + "(?:" + m.slice(3) + ")?"
+  )
   .join("|");
 const named = new RegExp(
   "\\b(" +
@@ -28,6 +32,12 @@ export function tripDate(text) {
         (m) => m.slice(0, 3) === en[1].slice(0, 3).toLowerCase()
       ) + 1;
   } else if (us) [, month, day, year] = us;
+  else if (
+    /\b(?:this|next|coming)\s+(?:weekend|week|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b|\btomorrow\b|\btoday\b|本周末|下周|明天|今天/i.test(
+      text
+    )
+  )
+    return { problem: "relative" };
   else return {};
   if (!year || String(year).length !== 4) return { problem: "year" };
   const nums = [Number(year), Number(month), Number(day)];

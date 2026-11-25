@@ -45,8 +45,13 @@ import {
   packBook,
   importBook,
   questionSource,
-} from "./study-library.js";
-import { editCards, renderRecall, showQuote } from "./recall-ui.js";
+} from "./study-library.js?v=subjects3";
+import {
+  editCards,
+  renderRecall,
+  showQuote,
+  manageCards,
+} from "./recall-ui.js?v=subjects3";
 init("study", openAISettings);
 if (!document.querySelector("link[data-study-studio]"))
   document.head.append(
@@ -203,7 +208,12 @@ function localQuiz() {
     );
     return;
   }
-  const source = [...new Set(qs.map((q) => q.evidence))].join("\n\n");
+  const extra = [
+    ...new Set(
+      qs.map((q) => q.evidence).filter((line) => !b.text.includes(line))
+    ),
+  ];
+  const source = [b.text, ...extra].filter(Boolean).join("\n\n");
   begin(
     source,
     qs,
@@ -288,6 +298,12 @@ const aiButton = btn(
 const recallBtn = btn(t("Practice saved cards", "练习已保存卡片"), () =>
   practiceCards(bookCards(state, book().id))
 );
+const manageBtn = btn(t("Manage cards", "管理卡片"), () =>
+  manageCards(state, book(), bookCards(state, book().id, true), () => {
+    persist();
+    renderNotebook();
+  })
+);
 const cardQuizBtn = btn(t("Quiz my cards", "用卡片测验"), localQuiz);
 const notesPanel = el(
   "section",
@@ -324,7 +340,7 @@ const notesPanel = el(
       ),
       btn(t("Make recall cards", "制作回忆卡"), makeCards, "lime-button"),
       totals,
-      el("div", { cls: "actions" }, recallBtn, cardQuizBtn)
+      el("div", { cls: "actions" }, recallBtn, cardQuizBtn, manageBtn)
     ),
     el(
       "div",
@@ -383,7 +399,10 @@ function renderNotebook() {
   );
   bookPicker.value = b.id;
   noteBox.value = b.text;
-  totals.textContent = cards.length + t(" saved cards", " 张已存卡片");
+  totals.textContent =
+    cards.length +
+    t(cards.length === 1 ? " active card" : " active cards", " 张可练卡片");
+  manageBtn.disabled = !bookCards(state, b.id, true).length;
   recallBtn.disabled = !cards.length;
   cardQuizBtn.disabled =
     new Set(cards.map((c) => c.back.trim().toLowerCase())).size < 2;
@@ -507,7 +526,11 @@ function renderHome() {
         continuing
           ? t("Continue recall", "继续回忆练习")
           : ready.length
-          ? ready.length + t(" cards to review", " 张卡可复习")
+          ? ready.length +
+            t(
+              ready.length === 1 ? " card to review" : " cards to review",
+              " 张卡可复习"
+            )
           : t("Study my notes", "复习我的笔记")
       ),
       action(
@@ -606,10 +629,9 @@ function sourceSheet(q) {
   );
 }
 function renderRecord() {
-  const rounds = [
-    ...state.rounds,
-    ...(state.quiz ? [state.quiz] : []),
-  ].reverse();
+  const rounds = allRounds(state).sort((a, b) =>
+    String(b.started).localeCompare(String(a.started))
+  );
   recordList.replaceChildren(
     ...(rounds.length
       ? rounds.map((q) => {
@@ -928,12 +950,15 @@ function renderQuiz() {
     );
     if (missed.length)
       quizBody.append(
-        small(
-          t(
-            "First-try misses are available as recall cards in Practice.",
-            "首答错题也可以在练习室作为回忆卡再练。"
-          )
-        ),
+        btn(t("Review misses as cards", "用回忆卡复习错题"), () => {
+          const cards = missed
+            .map((i) => rememberQuestion(state, q, i))
+            .filter(Boolean);
+          cards.forEach((c) => {
+            c.paused = false;
+          });
+          practiceCards(cards);
+        }),
         btn(
           t("Retry missed questions", "重练错题"),
           () =>

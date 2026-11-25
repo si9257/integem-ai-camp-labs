@@ -9,7 +9,7 @@ import {
   t,
   prettyTime,
 } from "./app-ui.js";
-import { draftCards, gradeRecall } from "./study-library.js";
+import { draftCards, gradeRecall } from "./study-library.js?v=subjects3";
 
 export function showQuote(title, paragraph, quote) {
   sheet(title, (body) => {
@@ -129,7 +129,7 @@ export function renderRecall(body, s, { save, home, notes }) {
     el("h1", {}, t("Recall practice", "回忆练习"))
   );
   if (!r || !c) {
-    const dueTimes = s.cards.map((v) => v.due),
+    const dueTimes = s.cards.filter((c) => !c.paused).map((v) => v.due),
       earliest = dueTimes.length ? Math.min(...dueTimes) : 0;
     body.replaceChildren(
       heading,
@@ -251,4 +251,112 @@ export function renderRecall(body, s, { save, home, notes }) {
     tile,
     btn(t("Back to practice", "回到练习室"), home, "subtle")
   );
+}
+
+export function manageCards(s, book, cards, onChange) {
+  sheet(t("Manage cards", "管理卡片"), (body) => {
+    const search = el("input", {
+        type: "search",
+        placeholder: t("Find a prompt or answer", "查找问题或答案"),
+      }),
+      list = el("div", { cls: "draft-cards" }),
+      status = notice();
+    function render() {
+      const query = search.value.trim().toLocaleLowerCase();
+      const matching = cards.filter((c) =>
+        [c.front, c.back].some((value) =>
+          value.toLocaleLowerCase().includes(query)
+        )
+      );
+      list.replaceChildren(
+        ...matching.map((c) => {
+          const front = el("input", { value: c.front, maxlength: 750 }),
+            back = el("textarea", { value: c.back, maxlength: 600, rows: 2 });
+          const run = (fn) => {
+            fn();
+            onChange();
+            render();
+          };
+          const edit = btn(
+            t("Save card", "保存卡片"),
+            () => {
+              if (!front.value.trim() || !back.value.trim()) {
+                message(
+                  status,
+                  t(
+                    "Enter both a prompt and an answer.",
+                    "请同时填写问题与答案。"
+                  ),
+                  true
+                );
+                return;
+              }
+              run(() => {
+                if (
+                  c.front !== front.value.trim() ||
+                  c.back !== back.value.trim()
+                ) {
+                  c.step = 0;
+                  c.due = Date.now();
+                }
+                c.front = front.value.trim();
+                c.back = back.value.trim();
+                message(status, t("Card updated.", "卡片已更新。"));
+              });
+            },
+            "primary"
+          );
+          const pause = btn(
+            c.paused
+              ? t("Resume reviews", "恢复复习")
+              : t("Pause reviews", "暂停复习"),
+            () =>
+              run(() => {
+                c.paused = !c.paused;
+                if (c.paused && s.review) {
+                  const r = s.review,
+                    at = r.ids.indexOf(c.id, r.index);
+                  if (at >= 0) {
+                    r.ids.splice(at, 1);
+                    if (at === r.index) {
+                      r.flipped = false;
+                      r.typed = "";
+                    }
+                  }
+                }
+                message(
+                  status,
+                  c.paused
+                    ? t("Reviews paused for this card.", "已暂停复习这张卡。")
+                    : t("Card back in rotation.", "卡片已恢复复习。")
+                );
+              })
+          );
+          return el(
+            "details",
+            { cls: "draft-card" },
+            el(
+              "summary",
+              {},
+              c.front + (c.paused ? t(" · paused", " · 已暂停") : "")
+            ),
+            field(t("Prompt", "卡片正面"), front),
+            field(t("Answer", "答案"), back),
+            el("blockquote", {}, c.evidence),
+            el("div", { cls: "actions" }, edit, pause)
+          );
+        })
+      );
+      if (!matching.length)
+        list.append(small(t("No matching cards.", "没有匹配的卡片。")));
+    }
+    search.addEventListener("input", render);
+    body.append(
+      small(book.title),
+      field(t("Search cards", "搜索卡片"), search),
+      status,
+      list
+    );
+    render();
+  });
 }
