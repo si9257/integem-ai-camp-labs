@@ -26,6 +26,7 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 | `docs/study/index.html`, `docs/study.js`, `docs/sample.js` | Study entry, quiz, tutor, and original soil-tray lesson | Replace the sample and verify each quotation against it. |
 | `docs/travel/index.html`, `docs/travel.js` | Family brief, controls, AI plan, day editor and export | Refine a planning constraint or a control. |
 | `docs/places.js`, `docs/weather.js` | Verified places, official links, NWS lookups and local-date matching | Check a venue source or follow a point-to-grid lookup. |
+| `docs/city-map.js`, `docs/cover-*.webp` | Interactive street map, day-order pins and four local illustrations | Venue coordinates live in `places.js`. Keep attribution visible when editing the map. |
 | `docs/common.js`, `docs/ai.js`, `docs/camp.css`, `docs/config.js` | Shared navigation, local storage, connection, visual styles and public defaults | Set a public model/address or adjust the palette. |
 | `relay.mjs`, `server.env.example`, `.gitignore` | Teacher/school relay, blank environment template and Git exclusions | Populate the private local `.env`. |
 | `README.md`, `TEACHER_GUIDE.md`, `TEACHER_GUIDE_EN.md` | Project entry and both teacher guides | Record the class release and checks. |
@@ -36,6 +37,8 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 2. Inside the repository’s **docs** folder, select **Add file → Upload files → Choose your files**. We selected these eleven direct children: `index.html`, `camp.css`, `config.js`, `common.js`, `ai.js`, `home.js`, `sample.js`, `study.js`, `places.js`, `weather.js` and `travel.js`. Wait until all names appear. Enter a **Commit summary** and select **Commit changes**. The two nested `index.html` files belong inside their course directories.
 3. At repository root, use **Create new file** for `.gitignore`. Use **Upload files** for `relay.mjs`, `server.env.example` and `README.md`, then for the two guides. Only the files in `docs/` are published as the student sites.
 4. During this release the teacher enabled **Edge extensions → ChatGPT → Details → Allow access to file URLs** so the extension could use the file chooser. For a manual upload, use GitHub’s chooser directly. Check the displayed destination folder and the names in each batch. Only the blank environment example belongs in an upload.
+
+To reproduce the current release, also select `city-map.js`, `cover-study.webp`, `cover-sf.webp`, `cover-sea.webp` and `cover-dc.webp` in step 2. The four covers represent Study Desk and the three cities. There are 16 direct files in `docs/`, plus the two course entry pages in their subdirectories.
 
 ## 3. Turn on GitHub Pages
 
@@ -100,7 +103,7 @@ Public defaults can go in `docs/config.js` so first-time visitors see the school
 | --- | --- | --- |
 | 0–3 min | **Load example notes**. Read the two-tray field experiment. Identify the set-up, the change and the measurements. | “What do the cups tell us? Did anyone measure evaporation?” |
 | 3–7 min | **Try prepared practice**. Deliberately choose A on question one, then **Check answer**. Read the quotation, refresh and continue. Answer B, D, A for the remaining three. | “Which line challenges our first answer?” The score should be 3/4. |
-| 7–10 min | **Retry missed questions**, answer C, finish with 1/1 and **Export learning record**. Open the Markdown. | “What can you find from the first attempt and the retry?” |
+| 7–10 min | **Retry missed questions**, answer C, finish with 1/1 and open **Learning record → Export learning record**. Open the Markdown. | “What can you find from the first attempt and the retry?” |
 | 10–15 min, with AI | Paste a learner’s short notes, **Generate quiz from notes**, answer one and select **Ask why**. Ask why the response was wrong, then ask which line supports the reasoning. Ask about a measurement absent from the notes. | “Did the tutor cite the correct source? How did it handle missing evidence?” |
 
 A five-day build can cover the student journey on day one, input and persistence on day two, structured questions and citation checking on day three, contextual tutoring on day four, and peer testing and presentation on day five.
@@ -109,12 +112,20 @@ A five-day build can cover the student journey on day one, input and persistence
 
 | Time | Teacher action | Evidence to examine |
 | --- | --- | --- |
-| 0–4 min | **Use family example**, or type “Two days in San Francisco with two kids. We like science and want indoor activities if it rains.” Use **Apply trip brief**, then adjust dates and budget. | The destination, duration and interests are reflected in editable controls. |
-| 4–8 min | Read **Weather window**. Identify source, coverage, temperature unit, NWS update time and retrieval time. Select a date several months away, then restore a covered date. | The app labels uncovered days. Night periods can span midnight and show their start and end. Official forecast wording remains in English. |
-| 8–13 min | In **Field guide → Add places to**, choose day one. Add the Exploratorium and the California Academy of Sciences, move one up and remove one. Add a place to day two. Refresh and **Export itinerary**. | Day, order and source links remain. The exported file includes forecast provenance. |
+| 0–4 min | Expand **Trip brief**, select **Use family example**, or type “Two days in San Francisco with two kids. We like science and want indoor activities if it rains.” Use **Apply trip brief**, then adjust dates and budget. | The destination, duration and interests are reflected in editable controls. |
+| 4–8 min | Open **Weather** and read **Weather window**. Identify source, coverage, temperature unit, NWS update time and retrieval time. Select a date several months away, then restore a covered date. | The app labels uncovered days. Night periods can span midnight and show their start and end. Official forecast wording remains in English. |
+| 8–13 min | In **Explore → Planning for**, choose the first day. On the Exploratorium card, choose **Show on map → Add to day 1**. Add the California Academy of Sciences, switch their order in **Itinerary**, then inspect **Map → Fit day**. Add a stop to day two and export the itinerary. | Day, order and source links remain. The export includes the weather source and each stop’s map link. |
 | 13–20 min, with AI | **Plan with AI**. If there are existing stops the app asks whether to replace the selected dates. Check a reason each day, then edit the plan manually. | Match each stop to a verified card, explain an indoor choice and check practical details with the venue. |
 
 Use week one for the family brief, a three-city source catalog, place cards, NWS lookups and cache/failure handling. Use week two for constrained AI output, place and reason validation, day editing, mobile tests and family presentations.
+
+### Teach visit order with the map
+
+1. Choose **Seattle → Map → Fit city**. Ask students to find Seattle Aquarium and Pacific Science Center among the four lettered pins. Select each pin, read its label and choose **Add to day 1**.
+2. Swap the stops in **Itinerary**, then select **Map → Fit day**. The numbers and dashed line show the visit order for the selected day. Pins represent venues. Check the operator’s site for walking directions, entrances and accessible routes.
+3. On a phone, select **Map** for a dedicated view. Drag to pan and pinch or use **+ / −** to zoom. A keyboard user can focus the map, pan with arrow keys and zoom with plus and minus. The selected place includes **OpenStreetMap ↗**. An exported itinerary includes each stop’s map link too.
+
+Students can open the map without an account, key or device-location permission. The browser requests visible street tiles from OpenStreetMap and displays attribution beneath the map. Its community-operated tile service is best effort. Use it interactively and avoid bulk downloads, prefetching or offline tile packs. The school network needs access to `tile.openstreetmap.org`. If streets fail to load, use **Retry map** or keep planning with the pins and place list. [Map data and attribution](https://www.openstreetmap.org/copyright) · [Official tile usage policy](https://operations.osmfoundation.org/policies/tiles/)
 
 ## 6. One-minute checks after credentials are ready
 
@@ -148,6 +159,7 @@ git push origin main
 | 400, 429, 502, 503 or a timeout | For 400 check model/limit parameters. For 429 wait and check the class limit. For 502 check the school host’s upstream connection. For 503 check `UPSTREAM_API_KEY`. If the local page is unreachable, check the terminal and port. |
 | A model replied, but the app rejected the result | The quiz must contain four distinct choices and exact source quotations. Trips require matching dates, known place IDs and permitted reasons. Retry with a JSON-capable model. The current trip is preserved until a replacement validates. |
 | Forecast timed out, is cached, or misses a date | Use **Refresh forecast**. Compare **NWS updated** with **Retrieved**. Each city keeps its own cache. Plan manually or ask AI to plan with explicitly unknown weather on uncovered dates. |
+| Street tiles are missing | Use **Retry map**, check access to `tile.openstreetmap.org` and use **Fit city** to return to the venues. Weather and street tiles come from separate services. |
 | A record disappeared | Verify the browser profile and origin. A local site and the Pages site have separate storage. Closing a private window, clearing site data or changing devices affects recovery. Keep a Markdown export for class records. |
 
 ## 9. Release record · November 25, 2026
@@ -159,13 +171,16 @@ git push origin main
 | [94a2688](https://github.com/si9257/integem-ai-camp-labs/commit/94a26881c00b8d94b9cf87bf2660a168e65f6322) | Uploaded both apps and the course home. |
 | [e7e8832](https://github.com/si9257/integem-ai-camp-labs/commit/e7e8832940a2bd7f00bf690c8cb1ebbe1743d7b8) · [3c32d48](https://github.com/si9257/integem-ai-camp-labs/commit/3c32d48b6b4b0a3e52813818c0ef7a98d28d9ae4) | Excluded private files and added the Node relay and blank environment example. |
 | [2f079cb](https://github.com/si9257/integem-ai-camp-labs/commit/2f079cb52e81a811135bf82cfc41e5f81e5fad63) | Formatted classroom source and gave the pair of NWS requests a 35-second timeout. |
+| [01d5367](https://github.com/si9257/integem-ai-camp-labs/commit/01d536732f9cfecade352478d7fd34247a7c151e) | Used **docs → Add file → Upload files** to publish two redesigned workspaces, four original illustrations and a keyless map at the existing URLs. [Pages deployment](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45565872333) |
+| [76ed985](https://github.com/si9257/integem-ai-camp-labs/commit/76ed9856230513b37db813ac5a72c91333ece0db) | Remembered the selected trip day and workspace and refined map pin positioning during zoom. [Pages deployment](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45567257669) |
 
 | Check | Observed result |
 | --- | --- |
 | Pages, languages and layouts | Home and both project paths opened on the public deployment. Desktop 1280×850 and phone 390×844 were exercised, plus a 768×1024 tablet check on Atlas. No horizontal page overflow was observed on the phone. Quiz controls, the connection dialog, forecast cards, stop controls and the language switch were checked. |
 | Study Desk | Edited notes and a submitted wrong answer survived a reload. The prepared run scored 3/4 and the missed-question retry scored 1/1. The downloaded `study-desk-record.md` contained edited notes and both scores. |
 | Field Trip Atlas | All three cities returned genuine NWS grid forecasts: MTR/85,105, SEW/125,68 and LWX/96,72. We observed a timeout and retry, a timestamped cache and an uncovered-date message. Tested city selection, 1–3 days, add/remove/reorder, save, reload and export. The DC three-day download contained day three, Fahrenheit forecasts, the NWS grid URL and the chosen venue. |
+| Redesigned map and classroom exports | On the public site we checked four venue pins per city, loaded street tiles and attribution. In Seattle we added the aquarium and Pacific Science Center from their pins, swapped their order and saw the map numbers change. The two-day plan survived reload. The downloaded Markdown included both days, individual venue map links and the SEW forecast source. We checked 390-, 768- and 1280-pixel layouts. |
 | Teacher relay | Node.js 24.22.3 started the relay. In-process request tests covered the static paths, CORS, missing provider key, class authentication and expiry, model restriction, upstream request path and rate cap, using an upstream test fixture. The test environment restricted loopback connections and its Edge-to-localhost check timed out. Recheck on the classroom computer using section 4. |
 | Live model | A real credential was not supplied. Section 6 covers actual quiz generation, contextual follow-ups and AI trip generation. |
 
-Original student activities, venue descriptions and CSS illustrations were written for Integem. The field guide links directly to each operator. NWS data is free to use and is attributed with source, timestamps and time zone. The student sites load no third-party pictures, fonts, maps or paid plug-ins. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+Integem created the classroom activities, venue descriptions and four AI-assisted cover illustrations. The covers ship with the project. Use the interactive map for geographic detail, and follow each place card to the operator’s website. The map credits © OpenStreetMap contributors. NWS supplies the forecast, which shows its source, time zone and update time. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)

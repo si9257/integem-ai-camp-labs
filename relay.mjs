@@ -62,6 +62,7 @@ const hourlyCap = positive(env.REQUESTS_PER_HOUR, 60),
 const contentTypes = {
   html: "text/html",
   css: "text/css",
+  webp: "image/webp",
   js: "text/javascript",
 };
 const files = new Set([
@@ -75,6 +76,11 @@ const files = new Set([
   "sample.js",
   "study.js",
   "places.js",
+  "city-map.js",
+  "cover-study.webp",
+  "cover-sf.webp",
+  "cover-sea.webp",
+  "cover-dc.webp",
   "weather.js",
   "travel.js",
 ]);
@@ -254,7 +260,9 @@ export async function handleRequest(req, res) {
     if (!files.has(file)) return json(res, 404, { error: "Not found" });
     const body = await readFile(new URL("./docs/" + file, import.meta.url));
     res.writeHead(200, {
-      "Content-Type": contentTypes[file.split(".").pop()] + "; charset=utf-8",
+      "Content-Type":
+        contentTypes[file.split(".").pop()] +
+        (file.endsWith(".webp") ? "" : "; charset=utf-8"),
       "Cache-Control": "no-cache",
     });
     res.end(req.method === "HEAD" ? "" : body);
