@@ -154,7 +154,16 @@ export function openFamily(hash) {
         { cls: "atlas-cover-copy" },
         el("p", { cls: "kicker" }, t("SHARED ITINERARY", "家庭分享行程")),
         el("h1", {}, city.name),
-        el("p", {}, view.date + " · " + view.days.length + t(" day(s)", " 天"))
+        el(
+          "p",
+          {},
+          view.date +
+            " · " +
+            t(
+              view.days.length === 1 ? "1 day" : view.days.length + " days",
+              view.days.length + " 天"
+            )
+        )
       )
     );
   const rail = el("nav", {
@@ -189,7 +198,7 @@ export function openFamily(hash) {
             el(
               "p",
               { cls: "place-meta" },
-              t("Stop ", "第 ") + (n + 1) + " · " + setting(p)
+              t("Stop " + (n + 1), "第 " + (n + 1) + " 站") + " · " + setting(p)
             ),
             el("h3", {}, p.name),
             el("p", {}, p.description),
@@ -205,7 +214,13 @@ export function openFamily(hash) {
     });
   }
   view.days.forEach((d, i) =>
-    rail.append(btn(t("Day ", "第 ") + (i + 1), () => render(i), "day-chip"))
+    rail.append(
+      btn(
+        t("Day " + (i + 1), "第 " + (i + 1) + " 天"),
+        () => render(i),
+        "day-chip"
+      )
+    )
   );
   $("#app").append(cover, rail, list, back);
   render(0);

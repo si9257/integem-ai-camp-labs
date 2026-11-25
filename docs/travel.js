@@ -290,12 +290,11 @@ function startPlanner() {
       tripStatus,
       city().name +
         " · " +
-        state.days +
-        " " +
         t(
-          "day(s). Review the dates and interests below.",
-          "天。可在下方调整日期和兴趣。"
-        )
+          state.days === 1 ? "1 day" : state.days + " days",
+          state.days + " 天"
+        ) +
+        t(". Trip preferences updated.", "。出行偏好已更新。")
     );
   }
   brief.addEventListener("change", applyBrief);
@@ -579,7 +578,7 @@ function startPlanner() {
         const b = btn("", () => changeDay(i), "day-chip");
         b.setAttribute("aria-pressed", String(i === state.activeDay));
         b.append(
-          el("strong", {}, t("Day ", "第 ") + (i + 1)),
+          el("strong", {}, t("Day " + (i + 1), "第 " + (i + 1) + " 天")),
           el("span", {}, dayLabel(d))
         );
         return b;
@@ -1224,7 +1223,10 @@ function startPlanner() {
       c.zone,
     ];
     for (const [i, date] of dates().entries()) {
-      lines.push("", "## " + t("Day ", "第 ") + (i + 1) + " · " + date);
+      lines.push(
+        "",
+        "## " + t("Day " + (i + 1), "第 " + (i + 1) + " 天") + " · " + date
+      );
       const pp = forDay(forecast, date, c.zone);
       lines.push(
         ...(pp.length

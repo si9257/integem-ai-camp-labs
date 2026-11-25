@@ -118,7 +118,16 @@ export function init(page, connect) {
   $("#mast").replaceChildren(
     el(
       "a",
-      { href: "#app", cls: "skip" },
+      {
+        href: "#app",
+        cls: "skip",
+        onclick: (event) => {
+          event.preventDefault();
+          const main = $("#app");
+          main.focus({ preventScroll: true });
+          main.scrollIntoView({ block: "start" });
+        },
+      },
       t("Skip to workspace", "跳到工作区")
     ),
     el("div", { cls: "mast-inner" }, brand, nav, tools)
@@ -138,7 +147,7 @@ export function workspaceTabs(label, choices, change, aliases = {}) {
     for (const [id, b] of buttons)
       b.setAttribute("aria-pressed", String(id === (aliases[key] || key)));
     change(key);
-    if (top) window.scrollTo({ top: 0, behavior: "instant" });
+    if (top) window.scrollTo({ top: 0, behavior: "auto" });
   }
   for (const [id, name, glyph] of choices) {
     const b = action(name, glyph, () => show(id, true, true), "dock-item");
