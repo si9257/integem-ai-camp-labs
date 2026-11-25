@@ -9,7 +9,26 @@
 
 学生打开网址即可使用，默认英文，右上角可切换中文。第一堂课可以先做预置题或手动规划。要演示根据任意笔记出题、导师追问和 AI 行程，请先完成下文的 AI 配置。
 
-手机底栏分别是 **Practice / Notebook / Tutor / Progress** 和 **Explore / Map / My trip / Weather**。右上角滑杆图标打开 **AI settings**。课堂备课可从[中英逐日课表](DAILY_CURRICULUM.md)挑选当天的学生任务。
+手机底栏分别是 **Practice / Notebook / Tutor / Progress** 和 **Explore / Map / My trip / Weather / Bookings**。右上角滑杆图标打开 **AI settings**。课堂备课可从[中英逐日课表](DAILY_CURRICULUM.md)挑选当天的学生任务。
+
+## 用自己的作业练一轮（约 12 分钟）
+
+1. 手机点 **Notebook → New notebook**，命名为 *Schoolyard shade*。粘贴下面三行课堂演示数据。请学生说明为什么第三行会影响前两行的比较。
+
+   ```text
+   Sunny court: 32 °C
+   Shaded bench: 25 °C
+   Control: The class used the same thermometer at both sites.
+   ```
+
+2. 点 **Make recall cards**。每张卡可改提问和答案，展开 **Source line** 看原句。把第一张的正面改成 *What did the class measure on the sunny court?*。点 **Save & practice**。让学生先说或输入答案，再点 **Reveal answer**。选 **Again** 后十分钟可再练，选 **Remembered** 后第一次间隔一天，再次记住会延长间隔。这里记录学生自己对回忆情况的判断。
+3. 回 **Notebook → Manage cards** 可以改题、暂停或恢复一张卡。打开 **Quiz my cards**。用自己的三张卡做选择题。先故意答错，再按提示改答。点 **Find in source** 定位原句，然后 **Ask why** 查看首答、改答、正确项和证据。接好班级 AI 后，可连续追问，例如“这组记录能证明遮荫是唯一原因吗？”。
+4. 在 **Quiz setup** 选 **At the end** 做一次先答后评的测验。要让模型出应用题或证据题，再选 **AI question focus**，点 **Generate quiz from notes**。AI 题须在笔记中找到模型引用的原句。材料太少时请补充笔记。卡片测验最多取笔记中可区分的答案数。
+5. 在 **Progress** 点以前的一轮，回看首答和错题，再点 **Retry missed questions**。切换科目用 **New notebook**，刷新可恢复。**Notebook files & name → Export notebook backup** 导出一科的笔记、卡片和复习时间；另一台设备可用 **Import a notebook copy** 导入为新本。**Progress → Export learning record** 导出可阅读的 Markdown，包括笔记、作答和导师对话，请由学生决定分享哪份材料。
+
+学生回家仍可用自己的笔记制卡、回忆、做卡片测验和导入备份。到期提醒在打开练习室时显示。需要 AI 追问或生成新题时，学生设备须能访问第 4 节配置的学校网关。实验笔记可改为自选学科；普通段落生成的填空草稿尤其需要学生审题。
+
+完整的分龄任务和实测结果见[学生视角测评](STUDENT_WALKTHROUGH.md)。学习设计参考了 [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn)、[Anki 学习手册](https://docs.ankiweb.net/manual/studying)、[Khan Academy 练习反馈](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery) 和[美国教育科学研究院实践指南](https://ies.ed.gov/ncee/wwc/PracticeGuide/1)。
 
 ## 1　从一个新 GitHub 账号到公开仓库
 
@@ -25,7 +44,7 @@
 | 仓库位置 | 职责 | 常见课堂改动 |
 | --- | --- | --- |
 | `docs/index.html`、`docs/home.js` | 课程入口和两个作品链接 | 改课程介绍 |
-| `docs/study/index.html`、`docs/study.js`、`docs/sample.js` | 学习页、出题、判分、导师和原创托盘实验 | 改示例笔记，检查引用是否还能在原文中找到 |
+| `docs/study/index.html`、`docs/study.js`、`docs/sample.js`、`docs/study-library.js`、`docs/recall-ui.js`、`docs/study-studio.css` | 学习页、出题、判分、导师和原创托盘实验 | 改示例笔记，检查引用是否还能在原文中找到 |
 | `docs/travel/index.html`、`docs/travel.js` | 表单、偏好解析、AI 规划、每日排序和导出 | 改规划提示词或行程编辑方式 |
 | `docs/places.js`、`docs/weather.js` | 三城景点与官网、NWS 请求和按目的地时区筛选 | 核查景点来源，跟踪 `/points` 返回的预报链接 |
 | `docs/city-map.js`、`docs/cover-*.webp` | 等比例街道地图、景点标记、当天连线，以及四张本地封面插画 | 景点经纬度在 `guide-data.js`。调整地图呈现时保留地图署名。 |
@@ -229,3 +248,9 @@ git push origin main
 4. 在公开 Pages 用 Edge 验证了手机点图钉和按 Enter 都能显示地点卡；卡片在底栏上方。桌面宽度也能选点。西雅图的两晚、两成人查询从 OBO 返回四条可点击的整段住宿报价，页面展示含税费说明与现场另收费，点其中一条进入相同入住和退房日期的可选房型页。华盛顿预报显示 NWS 的 LWX/96,72 网格和时段。
 5. 在单独的课堂行程上移动一站、选酒店、录入餐饮预算、刷新，再打开家庭链接。实际下载的 Markdown 包含三天日期、交通链接、出发酒店、NWS 来源和录入金额。费用与实时房价没有进入家庭分享链接，供应商房价也没有写入导出文件。
 6. 这次新版验收页没有可用的短期模型连接。真实模型新返回待填 Key 后验证。上文的一分钟测试应看到 **Preview your AI itinerary**，再到 **My trip** 改一天。程序层另行检查了七天分批、无效景点重试和只改一天的响应契约。
+
+### 分龄走查后的发布
+
+两个学生入口与逐日教学已同步更新。完整过程包括真实症状、升级前后的同一份旧行程、本次打开的官方数据、各年龄的学生任务和仍需在课堂验证的项目。[分龄实测记录](STUDENT_WALKTHROUGH.md)
+
+从 GitHub 仓库 `docs` 的 **Add file → Upload files → Choose your files** 提交本轮改动。新学习模块为 `study-library.js`、`recall-ui.js`、`study-studio.css`；旅行日期解析在 `trip-brief.js`。分别进入 `docs/study`、`docs/travel` 更新各自的 `index.html`。最后在仓库根目录提交中英教师手册、逐日课表、README、分龄报告和更新静态文件清单后的 `relay.mjs`。每次均在网页填写 **Commit summary → Commit changes**，并在 **Actions → pages build and deployment** 查看结果。[应用修复](https://github.com/si9257/integem-ai-camp-labs/commit/b59eb5661ea6444701945701b71bb666474aa8e3) · [学生应用部署 #23](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45604892841)

@@ -6,6 +6,18 @@
 
 手机版现场演示可从 **Practice → Storm lab** 体验提示后重答，或在 **My trip → Indoor alternatives** 替换一站，再用 **Family link** 从家长角度验收。
 
+## 一周班怎样用同一份作业做出五天的作品
+
+| 天 | 学生制作什么 | 下课前的检验 |
+| --- | --- | --- |
+| 周一 | 用同一份课堂笔记分别写“考我”和一份带目标、输出格式、证据要求的提示。给三行观察做卡片。 | 合上答案，口头回忆，再回笔记核对；辨认测量值和推断。 |
+| 周二 | 两人一组，一位写卡，一位只看手机做题。把问法有歧义的一张改到同学能独立回答。 | 保存首答和改答，说明为什么选择题比自由回忆容易。 |
+| 周三 | 做第二个科目的笔记本，设计一套应用或证据题；给同伴交换一份 JSON 副本。 | 同伴导入后能找到同样的原文；检查一条超出笔记范围的问题。 |
+| 周四 | 为另一个年龄的学生修改复习或反馈流程。用 **At the end** 完成一次测验，再把错题带回回忆练习。 | 刷新、切换科目、重开旧轮次。记录一个发现的问题，以及修复后同伴怎样验证。 |
+| 周五 | 向家长演示昨天到期的一张卡和一次能引用证据的纠错。交付自己的网址、笔记备份和演示。 | 家长能独立打开作品并做完一道题；学生能区分自评、首次得分和改答。 |
+
+**Five-day build.** Monday compares two prompts on the same observations and produces a source-backed recall card. Tuesday pairs a card author with a phone tester to repair an ambiguous prompt. Wednesday creates a second subject, exchanges a notebook copy and tries an unsupported question. Thursday builds and verifies a delayed-feedback quiz, including refresh and an older round. Friday shows a parent a due card and a corrected answer, then shares the student's own site and notebook backup.
+
 ## 两个班怎样拉开难度
 
 | | 一周班 · No-Code App Studio with AI Agents | 两周班 · AI App Engineering Studio |

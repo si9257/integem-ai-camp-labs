@@ -4,10 +4,10 @@ Two bilingual student projects for the Integem summer studio. The sites start in
 
 | Lab | Ages | Student project |
 | --- | --- | --- |
-| [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | 13–17 · one week | Turn notes into a quiz, recover a missed question with a hint and compare both attempts with the source. |
+| [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | 13–17 · one week | Keep subject notebooks, practice personal recall cards, generate evidence-backed quizzes, revisit misses and take a backup home. |
 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | 13–18 · two weeks | Plan 1–7 family days around 36 real sights. Compare live rooms, follow each leg, book admission and share the schedule. |
 
-[Bilingual daily curriculum](DAILY_CURRICULUM.md) · [Course home](https://si9257.github.io/integem-ai-camp-labs/) · [中文教师手册](TEACHER_GUIDE.md) · [English teacher guide](TEACHER_GUIDE_EN.md)
+[Student task walkthrough](STUDENT_WALKTHROUGH.md) · [Bilingual daily curriculum](DAILY_CURRICULUM.md) · [Course home](https://si9257.github.io/integem-ai-camp-labs/) · [中文教师手册](TEACHER_GUIDE.md) · [English teacher guide](TEACHER_GUIDE_EN.md)
 
 For a family showcase, open [a two-day Seattle itinerary](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sea~2027-01-19~pike-market.aquarium.sculpture~pacsci.mopop.space-needle!2!0930!transit!balanced!maxwell!pike-chowder.armory-food!95,110,45~105,80,60). This teacher-built snapshot includes hotel-to-stop directions, two meals and timed visits.
 

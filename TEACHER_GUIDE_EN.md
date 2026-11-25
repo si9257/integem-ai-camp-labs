@@ -9,7 +9,26 @@
 
 Students open a link without signing into GitHub. Both projects start in English. The header’s **中文** button switches the interface on that device. You can teach the prepared quiz, live weather and manual planning before connecting a model.
 
-On a phone, the bottom tabs are **Practice / Notebook / Tutor / Progress** and **Explore / Map / My trip / Weather**. The sliders icon opens **AI settings**. The [bilingual daily curriculum](DAILY_CURRICULUM.md#english-teacher-edition) includes the five-day and ten-day teaching sequences.
+On a phone, the bottom tabs are **Practice / Notebook / Tutor / Progress** and **Explore / Map / My trip / Weather / Bookings**. The sliders icon opens **AI settings**. The [bilingual daily curriculum](DAILY_CURRICULUM.md#english-teacher-edition) includes the five-day and ten-day teaching sequences.
+
+## A student's own homework in 12 minutes
+
+1. Open **Notebook → New notebook** and name it *Schoolyard shade*. Paste the following three original demonstration observations. Ask the class what the control lets them compare.
+
+   ```text
+   Sunny court: 32 °C
+   Shaded bench: 25 °C
+   Control: The class used the same thermometer at both sites.
+   ```
+
+2. Select **Make recall cards**. Edit the first prompt to *What did the class measure on the sunny court?* Expand **Source line** to check the observation. Select **Save & practice**. Think or type a guess before **Reveal answer**. **Again** schedules another look in ten minutes. The first **Remembered** schedules a day, with longer intervals after later successful recalls. These ratings are the student's own judgment.
+3. Use **Notebook → Manage cards** to edit or pause a card. Open **Quiz my cards**. Miss the first question on purpose and use the hint for a second attempt. **Find in source** highlights the line. **Ask why** shows both choices and the evidence. With class AI connected, ask whether these observations establish shade as the only cause.
+4. Select **At the end** in **Quiz setup** for a test with delayed feedback. Choose **Apply an idea** or **Compare evidence**, then **Generate quiz from notes** for new AI questions. Every model quote must match the notes. Add more observations if the source is too short. A local card quiz can have fewer questions than the selected target when the notebook has fewer distinct answers.
+5. In **Progress**, reopen a past round, inspect the first attempt and retry missed questions. Create a second subject with **New notebook** and refresh. **Notebook files & name → Export notebook backup** saves one notebook, its cards and their due dates. **Import a notebook copy** adds a separate notebook on another device. **Export learning record** in Progress makes a readable Markdown file with notes, answers and tutor conversations. Have students review it before sharing.
+
+At home, making cards, retrieving answers, taking card quizzes and importing a backup work without a class AI connection. Due reviews appear when the Practice room opens. AI questions and tutor conversations need the reachable school gateway in section 4. Have learners review proposed cloze prompts carefully when using prose notes.
+
+See the [student task walkthrough](STUDENT_WALKTHROUGH.md). Product and teaching references include [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn), [Anki studying](https://docs.ankiweb.net/manual/studying), [Khan Academy mastery feedback](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery), and the [IES practice guide](https://ies.ed.gov/ncee/wwc/PracticeGuide/1).
 
 ## 1. Start with a new GitHub account
 
@@ -25,7 +44,7 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 | Repository path | What it contains | A classroom edit |
 | --- | --- | --- |
 | `docs/index.html`, `docs/home.js` | Course home and project links | Reword a course introduction. |
-| `docs/study/index.html`, `docs/study.js`, `docs/sample.js` | Study entry, quiz, tutor, and original soil-tray lesson | Replace the sample and verify each quotation against it. |
+| `docs/study/index.html`, `docs/study.js`, `docs/sample.js`, `docs/study-library.js`, `docs/recall-ui.js`, `docs/study-studio.css` | Study entry, quiz, tutor, and original soil-tray lesson | Replace the sample and verify each quotation against it. |
 | `docs/travel/index.html`, `docs/travel.js` | Family brief, controls, AI plan, day editor and export | Refine a planning constraint or a control. |
 | `docs/places.js`, `docs/weather.js` | Verified places, official links, NWS lookups and local-date matching | Check a venue source or follow a point-to-grid lookup. |
 | `docs/city-map.js`, `docs/cover-*.webp` | Interactive street map, day-order pins and four local illustrations | Venue coordinates live in `guide-data.js`. Keep attribution visible when editing the map. |
@@ -229,3 +248,9 @@ The dashed map line shows stop order. Select a letter or number, or use the plac
 4. On public Pages, pointer and keyboard selection both opened the map card at phone width, above the bottom bar. Selection also worked on desktop. A two-adult, two-night Seattle search returned four bookable whole-stay offers from OBO, with fee notes. We followed one to available room types with both dates preserved. The Washington weather page showed NWS grid LWX/96,72, with dated periods and units.
 5. In the practice trip we moved a stop, chose a hotel, entered a meal allowance, reloaded and opened the family link. The downloaded Markdown contained three days, directions, the hotel, NWS source and entered amount. The shared URL omitted the budget and live prices. The export omitted supplier quotes.
 6. A short-lived model connection was unavailable in the new acceptance tab. A genuine model reply for this release is pending. Run the one-minute AI check above, confirm **Preview your AI itinerary**, then revise one day in **My trip**. Separate response-contract tests covered seven-day batching, retry after an invalid place ID, and a one-day revision.
+
+### Student walkthrough release
+
+The [age-by-age walkthrough](STUDENT_WALKTHROUGH.md) records tasks, observed outcomes and limits. Ages 13–14 covered recalling the class's own observations, correcting a wrong choice, tapping a map pin and moving a closed museum to the next day. Ages 15–16 switched subjects, reopened an archived quiz, checked an explicit July date, reordered a visit and balanced a day budget. A 17-year-old scenario tested delayed feedback, a notebook backup and official weather coverage. The 18-year-old Atlas scenario checked dated room inventory and opened a read-only family itinerary. These were developer-run scenarios in Edge. The class model and real-device Safari remain open checks.
+
+We used GitHub **Add file → Upload files → Choose your files** in `docs` for the updated modules, then in `docs/study` and `docs/travel` for each entry page. The root upload includes both teacher guides, the curriculum, README, the walkthrough and the teacher relay's updated asset list. Each upload used **Commit summary → Commit changes** on `main`. Use **Actions → pages build and deployment** to find the result. [App fixes](https://github.com/si9257/integem-ai-camp-labs/commit/b59eb5661ea6444701945701b71bb666474aa8e3) · [Student app deployment #23](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45604892841)
