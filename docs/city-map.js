@@ -1,3 +1,4 @@
+import { closedOn } from "./trip-engine.js";
 import { el, btn, link, t } from "./common.js";
 import { setting } from "./places.js";
 
@@ -408,7 +409,9 @@ export function createPlaceMap(addStop) {
       () => addStop(place.id),
       "map-add"
     );
-    add.disabled = n >= 0;
+    const closed = closedOn(place, view.date);
+    add.disabled = n >= 0 || closed;
+    if (closed) add.textContent = t("Closed · ", "闭馆 · ") + view.date;
     const clear = btn(
       "×",
       () => {

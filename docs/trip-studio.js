@@ -41,6 +41,10 @@ export function groupFields(p, onChange) {
       Array.from({ length: max - min + 1 }, (_, i) => [i + min, i + min]),
       p[key],
       (v) => {
+        if (key === "children" && Number(v) !== p.children) {
+          p.ages = "";
+          ages.querySelector("input").value = "";
+        }
         set(key, Number(v));
         ages.hidden = !p.children;
       }
@@ -62,7 +66,7 @@ export function groupFields(p, onChange) {
       "div",
       { cls: "pair" },
       field(t("Adults", "成人"), count("adults", 1, 6)),
-      field(t("Children", "儿童"), count("children", 0, 4))
+      field(t("Under 18", "未满 18 岁"), count("children", 0, 4))
     ),
     ages,
     el(

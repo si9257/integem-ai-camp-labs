@@ -24,6 +24,7 @@ import {
   dateInZone,
   plusDays,
 } from "./app-ui.js";
+import { tripDate } from "./trip-brief.js";
 import { familyLink, shareTrip, openFamily } from "./family.js";
 import { configured, openAISettings } from "./ai.js";
 import { createPlaceMap, osmPlaceURL } from "./city-map.js";
@@ -310,7 +311,29 @@ function startPlanner() {
   });
   function applyBrief() {
     const value = brief.value.trim();
-    if (!value || value === state.appliedBrief) return;
+    brief.setCustomValidity("");
+    composer.setCustomValidity("");
+    if (!value || value === state.appliedBrief) return true;
+    const parsed = tripDate(value);
+    if (parsed.problem) {
+      const msg =
+        parsed.problem === "year"
+          ? t(
+              "Include a four-digit year in your trip brief (e.g. July 12, 2027).",
+              "请在出行描述中写明四位年份，例如 2027年7月12日。"
+            )
+          : t(
+              "That calendar date does not exist. Correct the date in your trip brief.",
+              "这个日期不存在，请修改出行描述中的日期。"
+            );
+      message(tripStatus, msg, true);
+      brief.setCustomValidity(msg);
+      composer.setCustomValidity(msg);
+      (brief.isConnected ? brief : composer).reportValidity();
+      return false;
+    }
+    brief.setCustomValidity("");
+    composer.setCustomValidity("");
     const places = [
       ["sf", /san francisco|旧金山|旧金山市|三藩市/i],
       ["sea", /seattle|西雅图/i],
@@ -341,6 +364,9 @@ function startPlanner() {
     const requested = Object.keys(map).filter((key) => map[key].test(value));
     if (requested.length) state.interests = requested;
     const counts = {
+      zero: 0,
+      no: 0,
+      零: 0,
       one: 1,
       two: 2,
       three: 3,
@@ -356,22 +382,32 @@ function startPlanner() {
       六: 6,
     };
     const group = value.match(
-      /(\d+|one|two|three|four|[一两二三四])\s*(?:个|名|位)?\s*(?:kids?|children|child\b|孩子|儿童)/i
+      /(\d+|zero|no|one|two|three|four|[零一两二三四])\s*(?:个|名|位)?\s*(?:kids?|children|child\b|teens?\b|teenagers?\b|孩子|儿童|青少年|少年)/i
     );
     const grown = value.match(
       /(\d+|one|two|three|four|five|six|[一两二三四五六])\s*(?:名|位|个)?\s*(?:adults?|成人|大人)/i
     );
+    if (
+      /\b(?:adults?[ -]only|no (?:children|kids|teens))\b|仅成人|全是成人/i.test(
+        value
+      )
+    ) {
+      state.prefs.children = 0;
+      state.prefs.ages = "";
+    }
     if (group) {
       const n = Number(group[1]) || counts[group[1].toLowerCase()] || 0;
-      if (n <= 4) state.prefs.children = n;
+      if (n <= 4 && n !== state.prefs.children) {
+        state.prefs.children = n;
+        state.prefs.ages = "";
+      }
     }
     if (grown) {
       const n = Number(grown[1]) || counts[grown[1].toLowerCase()];
       if (n >= 1 && n <= 6) state.prefs.adults = n;
     }
-    const when = value.match(/\b\d{4}-\d{2}-\d{2}\b/);
-    if (when && matchesDate(when[0]) && plusDays(when[0], 0) === when[0])
-      state.start = when[0];
+    if(parsed.date)state.start=parsed.date;
+    document.querySelector("[data-editor-group]")?.replaceWith(groupForEditor());
     state.appliedBrief = value;
     state.activeDay = Math.min(state.activeDay, state.days - 1);
     changed();
@@ -421,13 +457,13 @@ function startPlanner() {
       t(state.days === 1 ? "day" : "days", "天")
     );
   }
+  function groupForEditor(){const box=groupFields(state.prefs,()=>{changed();booking.refresh();renderPlan();});box.dataset.editorGroup="";return box;}
   function editTrip() {
     sheet(t("Edit trip", "编辑旅行"), (body, close) => {
       const done = btn(
         t("Done", "完成"),
         () => {
-          applyBrief();
-          close();
+          if (applyBrief() !== false) close();
         },
         "primary"
       );
@@ -439,11 +475,7 @@ function startPlanner() {
           field(t("First day", "出发日期"), dateInput),
           field(t("Duration", "行程天数"), lengthSelect)
         ),
-        groupFields(state.prefs, () => {
-          changed();
-          booking.refresh();
-          renderPlan();
-        }),
+        groupForEditor(),
         field(t("Family trip brief", "家庭出行描述"), brief),
         el(
           "div",
@@ -523,7 +555,7 @@ function startPlanner() {
       btn(
         t("Find hotel prices", "查询酒店价格"),
         () => {
-          applyBrief();
+          if (applyBrief() === false) return;
           tabs.select("bookings");
           if (!state.prefs.children) booking.search();
         },
@@ -713,7 +745,9 @@ function startPlanner() {
   }
   function details(p) {
     sheet(p.name, (body, close) => {
-      const added = stops(dates()[state.activeDay]).some((s) => s.id === p.id);
+      const date = dates()[state.activeDay],
+        closed = closedOn(p, date),
+        added = stops(date).some((s) => s.id === p.id);
       const add = action(
         added
           ? t("Already in my trip", "已在行程中")
@@ -725,7 +759,7 @@ function startPlanner() {
         },
         "primary"
       );
-      add.disabled = added;
+      add.disabled = added || closed;
       body.append(
         venueImage(p, "sheet-photo"),
         el(
@@ -736,6 +770,7 @@ function startPlanner() {
         el("p", {}, p.description),
         small(p.area + " · " + p.minutes + " min"),
         small(p.tip),
+        closed ? closureNotice(date) : "",
         link(feeAction(p) + " ↗", p.booking, true),
         el(
           "div",
@@ -756,10 +791,22 @@ function startPlanner() {
       );
     });
   }
+  function closureNotice(date) {
+    return el(
+      "small",
+      { cls: "closed-note" },
+      t("Known closure · ", "已知闭馆日 · ") + date
+    );
+  }
   function addToDay(id) {
     const date = dates()[state.activeDay],
       place = findPlace(id);
-    if (!place || stops(date).some((stop) => stop.id === id)) return;
+    if (
+      !place ||
+      closedOn(place, date) ||
+      stops(date).some((stop) => stop.id === id)
+    )
+      return;
     plan()[date] = [...stops(date), { id, reason: "manual" }];
     changed();
     renderPlan();
@@ -811,7 +858,8 @@ function startPlanner() {
     placeCount.textContent = entries.length + " " + t("places", "处");
     catalog.replaceChildren(
       ...entries.map((p) => {
-        const added = stops(date).some((s) => s.id === p.id);
+        const closed = closedOn(p, date),
+          added = stops(date).some((s) => s.id === p.id);
         const open = btn("", () => details(p), "venue-open");
         open.append(
           venueImage(p),
@@ -823,13 +871,16 @@ function startPlanner() {
               { cls: "place-meta" },
               setting(p) + " · " + interests[p.tags[0]]
             ),
-            el("h3", {}, p.name)
+            el("h3", {}, p.name),
+            closed ? closureNotice(date) : null
           )
         );
         const add = btn("", () => addToDay(p.id), "place-plus");
         add.append(icon(added ? "check" : "plus"));
-        add.disabled = added;
-        const title = added
+        add.disabled = added || closed;
+        const title = closed
+          ? p.name + t(" closed on ", " 当天闭馆 ") + date
+          : added
           ? p.name + t(" already added", " 已添加")
           : t("Add ", "添加 ") +
             p.name +
@@ -1245,6 +1296,21 @@ function startPlanner() {
         : t("Preview your AI itinerary", "预览 AI 行程"),
       (body, close) => {
         const status = notice();
+        body.append(
+          el(
+            "p",
+            { cls: "trip-preview-group" },
+            city().name +
+              " · " +
+              state.start +
+              " · " +
+              state.prefs.adults +
+              t(" adult(s)", " 位成人") +
+              " · " +
+              state.prefs.children +
+              t(" under 18", " 位未满18岁")
+          )
+        );
         for (const [date, d] of Object.entries(draft)) {
           const items = timeline(city(), date, d.stops, prefs(), d.meta);
           body.append(
@@ -1332,8 +1398,7 @@ function startPlanner() {
     );
   }
   async function makePlan(mode = "ai") {
-    if (planning) return;
-    applyBrief();
+    if (planning || applyBrief() === false) return;
     const revise = mode === "revise",
       request = revise ? refinement.value.trim() : "";
     if (revise && !request) {
