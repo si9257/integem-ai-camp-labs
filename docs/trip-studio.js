@@ -203,7 +203,7 @@ export function activityRow(item, city, prefs, controls) {
   if (controls) inner.append(controls);
   return box;
 }
-export function travelBoard(city, date) {
+export function travelBoard(city, date, party) {
   const service = city.transit,
     fare = fareInfo(city, date);
   return el(
@@ -212,6 +212,21 @@ export function travelBoard(city, date) {
     el("h2", {}, t("Transportation", "交通出行")),
     el("strong", {}, service.name),
     el("p", {}, fare.text),
+    party && city.id !== "dc"
+      ? small(
+          t(
+            "If each adult pays regular fare, one ",
+            "若成人均付普通票价，按所填人数单程 "
+          ) +
+            (city.id === "sea" ? "Link 1/2" : "Muni") +
+            t(" ride for your group totals ", " 共计 ") +
+            usd(
+              party.adults *
+                (city.id === "sea" || date >= "2027-01-04" ? 3 : 2.85)
+            ) +
+            (city.id === "sf" ? t(" with tap payment.", "（刷卡）。") : ".")
+        )
+      : null,
     city.id !== "dc" ? small(service.description) : null,
     row(
       out(t("Fare rules", "票价规则"), fare.url),
@@ -390,7 +405,7 @@ export function createBookings(context, editTrip, selectHotel) {
         )
       )
     );
-    transport.replaceChildren(travelBoard(city, stay.checkIn));
+    transport.replaceChildren(travelBoard(city, stay.checkIn, prefs));
     const { day, stops } = context(),
       planned = stops
         .map((s) => city.places.find((p) => p.id === s.id))

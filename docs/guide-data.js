@@ -724,6 +724,30 @@ export const destinations = {
           "原店位于 Post Alley，官网菜单列有浓汤、海鲜卷和营业时间。进店不用买景点门票，请给可能的排队留时间。",
         ],
       },
+      {
+        id: "wings-cafe",
+        name: ["Wings Café", "飞行博物馆 Wings Café"],
+        area: ["Boeing Field / Georgetown south", "波音机场一带"],
+        point: [47.51806, -122.29694],
+        minutes: 45,
+        url: "https://www.museumofflight.org/Visit/Food-and-Drink",
+        detail: [
+          "Stop at the café in the Museum of Flight after the aircraft galleries. Its menu is available from the museum, and no admission ticket is needed to eat here.",
+          "参观飞机展厅后可在馆内 Wings Café 用餐。官网提供菜单，单独来用餐无需博物馆门票。",
+        ],
+      },
+      {
+        id: "off-the-rez",
+        name: ["Off the Rez Café", "伯克博物馆 Off the Rez Café"],
+        area: ["University District / UW campus", "大学区华盛顿大学校园"],
+        point: [47.66052, -122.31156],
+        minutes: 45,
+        url: "https://www.burkemuseum.org/hours-admissions",
+        detail: [
+          "Use the café entrance on Memorial Way by the Burke Museum. Check the current café hours before walking over.",
+          "可从伯克博物馆 Memorial Way 一侧进入咖啡厅，出发前在官网核对当天供餐时段。",
+        ],
+      },
     ],
     transit: {
       name: "Sound Transit · Link 1 and 2 Lines",

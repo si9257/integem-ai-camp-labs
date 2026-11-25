@@ -1,5 +1,5 @@
 import { lang, t, parseJSON } from "./common.js";
-import { closedOn, validateDraft } from "./trip-engine.js";
+import { closedOn, validateDraft, fareInfo } from "./trip-engine.js";
 import { chat } from "./ai.js";
 
 export async function draftWithModel({
@@ -42,7 +42,12 @@ export async function draftWithModel({
       interests,
       familyBrief: brief,
       budgetAndAccess: budget,
-      selectedHotel: base?.name || null,
+      selectedHotel: base ? { name: base.name, area: base.area } : null,
+      transit: {
+        operator: city.transit.name,
+        network: city.transit.description,
+        fare: fareInfo(city, batch[0]).text,
+      },
       changeRequested: request || null,
       history,
       currentTrip: current,
@@ -59,6 +64,15 @@ export async function draftWithModel({
         suggestedMinutes: p.minutes,
         activity: p.description,
         visitorNote: p.tip,
+        regularHoursInMinutes:
+          p.opens == null
+            ? null
+            : {
+                open: p.opens,
+                close: p.closes,
+                weekdayOverrides: p.weekHours,
+                dateOverrides: p.dateHours,
+              },
         closedOn: batch.filter((d) => closedOn(p, d)),
       })),
       meals: city.meals.map((m) => ({
@@ -79,8 +93,11 @@ export async function draftWithModel({
     let reply = await chat(msgs),
       parts;
     try {
-      parts = validateDraft(parseJSON(reply), city, batch);
-    } catch {
+      parts = validateDraft(parseJSON(reply), city, batch, {
+        ...preferences,
+        hotel: base?.id || "",
+      });
+    } catch (invalid) {
       if (!stillCurrent())
         throw Error(
           t(
@@ -94,10 +111,15 @@ export async function draftWithModel({
         {
           role: "user",
           content:
-            "Correct the JSON against the supplied dates, permitted IDs and closedOn dates. minutes must be an integer 20–240. Return only the corrected complete batch.",
+            "Validation: " +
+            String(invalid.message).slice(0, 300) +
+            ". Correct dates, IDs, opening windows and journey length. Cluster closer venues or remove a stop. Minutes must be an integer 20–240. Return the complete corrected JSON batch.",
         },
       ]);
-      parts = validateDraft(parseJSON(reply), city, batch);
+      parts = validateDraft(parseJSON(reply), city, batch, {
+        ...preferences,
+        hotel: base?.id || "",
+      });
     }
     Object.assign(drafts, parts);
     Object.values(parts).forEach((d) => d.stops.forEach((s) => used.add(s.id)));

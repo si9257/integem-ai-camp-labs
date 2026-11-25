@@ -676,7 +676,16 @@ function startPlanner() {
     }
   );
   $("#app").append(
-    ...(practice ? [small(t("Class practice · this itinerary saves separately.","课堂练习 · 此行程单独保存。"))] : []),
+    ...(practice
+      ? [
+          small(
+            t(
+              "Class practice · this itinerary saves separately.",
+              "课堂练习 · 此行程单独保存。"
+            )
+          ),
+        ]
+      : []),
     banner,
     shortcuts,
     bar,
@@ -1258,53 +1267,64 @@ function startPlanner() {
             )
           );
         }
+        function apply(target) {
+          if (revision !== stamp) {
+            message(
+              status,
+              t(
+                "Your trip changed. Close this preview and build it again.",
+                "行程已更改，请关闭预览并重新生成。"
+              ),
+              true
+            );
+            return;
+          }
+          for (const [d, v] of Object.entries(draft)) {
+            plan()[d] = v.stops;
+            meta()[d] = v.meta;
+          }
+          if (request) {
+            const history = state.requests[state.city] || [];
+            state.requests[state.city] = [
+              ...history,
+              { date: dates()[state.activeDay], request },
+            ].slice(-4);
+            refinement.value = "";
+          }
+          changed();
+          renderPlan();
+          renderCatalog();
+          close();
+          tabs.select(target);
+          if (target === "bookings" && !state.prefs.children) booking.search();
+          message(
+            planStatus,
+            source === "guide"
+              ? t(
+                  "Built from the verified city guide and saved.",
+                  "已按已核查城市指南生成并保存。"
+                )
+              : t(
+                  "Model itinerary saved. Adjust any day below.",
+                  "已保存模型生成的行程，可继续调整。"
+                )
+          );
+        }
         body.append(
           btn(
             t("Use this itinerary", "采用这份行程"),
-            () => {
-              if (revision !== stamp) {
-                message(
-                  status,
-                  t(
-                    "Your trip changed. Close this preview and build it again.",
-                    "行程已更改，请关闭预览并重新生成。"
-                  ),
-                  true
-                );
-                return;
-              }
-              for (const [d, v] of Object.entries(draft)) {
-                plan()[d] = v.stops;
-                meta()[d] = v.meta;
-              }
-              if (request) {
-                const history = state.requests[state.city] || [];
-                state.requests[state.city] = [
-                  ...history,
-                  { date: dates()[state.activeDay], request },
-                ].slice(-4);
-                refinement.value = "";
-              }
-              changed();
-              renderPlan();
-              renderCatalog();
-              close();
-              tabs.select("itinerary");
-              message(
-                planStatus,
-                source === "guide"
-                  ? t(
-                      "Built from the verified city guide and saved.",
-                      "已按已核查城市指南生成并保存。"
-                    )
-                  : t(
-                      "Model itinerary saved. Adjust any day below.",
-                      "已保存模型生成的行程，可继续调整。"
-                    )
-              );
-            },
+            () => apply("itinerary"),
             "primary"
           ),
+          ...(state.days > 1
+            ? [
+                btn(
+                  t("Use itinerary & check rooms", "采用行程并查房"),
+                  () => apply("bookings"),
+                  "subtle"
+                ),
+              ]
+            : []),
           btn(t("Keep my current trip", "保留原行程"), close, "subtle"),
           status
         );
@@ -1329,8 +1349,13 @@ function startPlanner() {
       return;
     }
     const question = revise ? request : state.brief;
+    const wantsItinerary =
+      /itinerary|plan (?:a|my|our|the|both)|plan.{0,15}days|规划|安排行程|安排.{0,6}[天日]|行程/i.test(
+        question
+      );
     if (
       mode !== "guide" &&
+      !wantsItinerary &&
       /(look up|search|check|compare|how much|find|查询|搜|比较|多少钱|查一下|帮我查).{0,22}(hotel price|room rate|hotel rate|hotel rooms?|rooms? for|hotel availability|酒店价格|酒店房价|酒店|房价)|(?:hotel prices?|room rates?|房价).{0,10}[?？]/i.test(
         question
       )
@@ -1341,6 +1366,7 @@ function startPlanner() {
     }
     if (
       mode !== "guide" &&
+      !wantsItinerary &&
       /(?:check|look up|find|查询|查一下).{0,12}(?:transit fare|train fare|bus fare|departures|交通票价|公交票价|地铁票价|实时班次)/i.test(
         question
       )

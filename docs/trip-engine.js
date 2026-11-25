@@ -333,7 +333,7 @@ export function quickDraft(
   }
   return result;
 }
-export function validateDraft(raw, city, dates) {
+export function validateDraft(raw, city, dates, preferences) {
   const bad = () =>
     new Error(
       t(
@@ -391,6 +391,30 @@ export function validateDraft(raw, city, dates) {
         mealId: d.mealId || "",
       },
     };
+    if (preferences) {
+      const blocks = timeline(
+        city,
+        d.date,
+        stops,
+        preferences,
+        result[d.date].meta
+      );
+      const span = blocks.at(-1).end - blocks[0].start;
+      if (
+        span >
+          ({ easy: 480, balanced: 600, full: 720 }[preferences.pace] || 600) ||
+        blocks.at(-1).end > 1440 ||
+        blocks.some((b) => b.late)
+      )
+        throw new Error(
+          t("Shorten or reorder the visits on ", "请缩短或调整当日安排 ") +
+            d.date +
+            t(
+              " to fit the pace and published closing times.",
+              "，以符合所选节奏和公布的闭馆时间。"
+            )
+        );
+    }
   }
   return result;
 }
