@@ -23,12 +23,19 @@
 
 2. 点 **Make recall cards**。每张卡可改提问和答案，展开 **Source line** 看原句。把第一张的正面改成 *What did the class measure on the sunny court?*。点 **Save & practice**。让学生先说或输入答案，再点 **Reveal answer**。选 **Again** 后十分钟可再练，选 **Remembered** 后第一次间隔一天，再次记住会延长间隔。这里记录学生自己对回忆情况的判断。
 3. 回 **Notebook → Manage cards** 可以改题、暂停或恢复一张卡。打开 **Quiz my cards**。用自己的三张卡做选择题。先故意答错，再按提示改答。点 **Find in source** 定位原句，然后 **Ask why** 查看首答、改答、正确项和证据。接好班级 AI 后，可连续追问，例如“这组记录能证明遮荫是唯一原因吗？”。
-4. 在 **Quiz setup** 选 **At the end** 做一次先答后评的测验。要让模型出应用题或证据题，再选 **AI question focus**，点 **Generate quiz from notes**。AI 题须在笔记中找到模型引用的原句。材料太少时请补充笔记。卡片测验最多取笔记中可区分的答案数。
+4. 在 **Quiz setup** 选 **At the end** 做一次先答后评的测验。**Question sources → My notes only** 用原文逐字核对引用；默认的 **Notes + topic knowledge** 会用笔记本名决定学科，围绕笔记中的主题拓展知识。**Question formats** 可选混合或单一题型。点 **Generate quiz from notes** 开始。自制卡片的本地测验仍按不同答案数取题。
 5. 在 **Progress** 点以前的一轮，回看首答和错题，再点 **Retry missed questions**。切换科目用 **New notebook**，刷新可恢复。**Notebook files & name → Export notebook backup** 导出一科的笔记、卡片和复习时间；另一台设备可用 **Import a notebook copy** 导入为新本。**Progress → Export learning record** 导出可阅读的 Markdown，包括笔记、作答和导师对话，请由学生决定分享哪份材料。
 
 学生回家仍可用自己的笔记制卡、回忆、做卡片测验和导入备份。到期提醒在打开练习室时显示。需要 AI 追问或生成新题时，学生设备须能访问第 4 节配置的学校网关。实验笔记可改为自选学科；普通段落生成的填空草稿尤其需要学生审题。
 
 完整的分龄任务和实测结果见[学生视角测评](STUDENT_WALKTHROUGH.md)。学习设计参考了 [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn)、[Anki 学习手册](https://docs.ankiweb.net/manual/studying)、[Khan Academy 练习反馈](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery) 和[美国教育科学研究院实践指南](https://ies.ed.gov/ncee/wwc/PracticeGuide/1)。
+
+## 用“猫科”上五分钟生物小课
+
+1. 在 **Notebook** 新建“生物”，笔记写“猫科”。保持 **4 / Mixed formats / Notes + topic knowledge**。学生只需一个主题就能开始，中文主题可生成中文试题。
+2. 交给同学做四种题。选择题可用狮和虎的学名辨认属与种；填空题可考猎豹尾巴在急转时的作用；判断题可考猫科动物社会行为的差异；简答题可解释雪豹的毛色与岩石环境怎样共同形成伪装。每次模型提问可能不同。
+3. 先独立作答。填空接受列出的同义答案。简答先写自己的解释，提交后逐项勾出答案已覆盖的要点；全部覆盖计一题正确，成绩会注明自评。在交卷模式，所有题答完才显示评分要点。
+4. 让学生指认 **From the source** 或 **Topic knowledge**。前者可以点 **Find in source** 找笔记原句，后者展示拓展说明。猫科题可以打开平台核过的资料；其他主题没有预设参考时会标明 AI 拓展。一句话笔记无需承担教材的作用。打印学生卷可隐藏参考答案，教师卷含简答评分要点。[ITIS 豹属分类](https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=180592) · [史密森学会猎豹资料](https://nationalzoo.si.edu/animals/cheetah) · [圣迭戈动物园雪豹资料](https://zoo.sandiegozoo.org/animals/snow-leopard)
 
 ## 把测验和回忆卡带到纸上
 
@@ -43,7 +50,7 @@
 
 ## 长笔记与 AI 等待画面
 
-笔记框可以粘贴完整课文或几份合并的课堂记录，应用没有设定字数门槛。一行有事实的笔记就能尝试出题。材料支持的题目较少时，模型可以返回较少题目。长笔记会拆成多段逐段发给网关，收集能逐字对上原文的摘录，再从不同段落选择材料组成测验。每段会占用一次模型请求；保存容量取决于当前设备，较长笔记适合另外导出备份。
+可以粘贴完整课文，也可以只写“猫科”这样的主题。AI 按所选的 3、4 或 6 题组卷。长笔记分段阅读并核对摘录，模型第一次给错题量或格式时，应用会请求它重新组卷。每段阅读和重新组卷都会占用模型请求。如果选“只考笔记原文”且材料不足，页面会提示补充笔记或启用拓展。保存容量取决于设备，较长笔记适合另外导出备份。
 
 点 **Generate quiz from notes** 或 **Plan with AI** 后，学生会看到动画、本次任务和已用时间。长笔记显示当前段落，多日行程显示正在规划的日期。支持流式返回的网关还会显示实际收到的字符数。整份返回的网关（含本地教师转发）在等待期间显示任务和计时。请保持页面打开；刷新或离开会中断本次未完成的生成。**Stop generating** 可立即停止，然后重试。已经保存的笔记和采用的行程可以继续使用。
 
@@ -92,13 +99,21 @@
 
 ## 4　根据手中的凭证选择 AI 配置
 
-两个作品调用 OpenAI 兼容的 `POST /v1/chat/completions`，发送 `model` 和 `messages`，整份返回时读取 `choices[0].message.content`，流式返回时合并 `choices[0].delta.content`。页面里的 AI 设置在两个作品间共用 Base URL 和模型名。短期班级凭证只在当前页面内存中，刷新、换作品或重新打开后需要再填。笔记、成绩和行程保存在当前浏览器的本地存储。点击 AI 功能时，相应笔记或出行偏好才发给所配置的服务。课堂演示可用示例笔记和虚构家庭偏好。
+两个作品都调用 OpenAI 兼容的 `POST /v1/chat/completions`。在任一作品的 **AI settings** 输入网关 Base URL、模型名和班级 API Key，点 **Save connection**。默认模型是 `openai/gpt-6-luna`，网关需支持该 ID。两个作品共用同一浏览器配置文件内的连接；刷新、关闭标签或切换作品后仍可使用。旧版仅在内存中保留的 Key 需要在新版保存一次。短期凭证仍按学校设置到期。
 
 | 情形 | 老师做什么 | 学生如何使用 |
 | --- | --- | --- |
 | 学校已有支持跨域的 AI 网关 | 准备 HTTPS Base URL、模型名，以及短期、限额的班级凭证 | 打开 Pages，在 **AI settings** 填好三项并 **Save connection** |
 | 老师手中只有长期服务端 Key，先在本机投影 | 按下节启动仓库附带的 Node 转发，Key 放在本机 `.env` | 老师浏览器打开转发程序打印的本机网址，两站自动获得本机接口和模型 |
 | 课后学生在家仍需要 AI | 使用学校已有的可联网 HTTPS 服务，或将此转发接在学校的 HTTPS 反向代理后，发短期凭证 | 打开同一个公开 Pages 网址，Base URL 指向学校网关 |
+
+### 在哪台设备保存连接
+
+班级 Key 绑定到填写的接口地址，使用 Web Crypto 加密后存入该浏览器的站点数据。公共仓库、学习记录、行程和分享链接都不含凭证。切换到另一浏览器、配置文件或无痕窗口时另行输入。关闭最后一个无痕窗口会丢弃该次无痕会话的数据。要在原浏览器移除，点 **Disconnect** 或清除此网站的站点数据；仅清除“缓存的图片和文件”通常会保留连接。共享教室电脑宜用短期、限额的班级 Key。长期服务端 Key 由下节的教师转发保管。
+
+### 不适用于课堂的请求
+
+出题、AI 导师、旅行规划及行程修改共用中英文检查。页面会在发送前检查输入，也在收到整份回复后检查才展示。命中时只给出“不适用于学生课堂，请换一个主题”的提示。模型可能出错，老师可用自己的教学样例验收。校方可在 `docs/config.js` 的 `blockedTerms` 添加中英文词组；教师转发可使用同样的 `CLASSROOM_BLOCKED_TERMS` 逗号分隔清单。自有网关也应配置服务端内容审核。
 
 ### 在教师电脑上演示
 
@@ -173,9 +188,9 @@ location = /v1/chat/completions {
 
 ## 6　填好凭证后的 1 分钟验收
 
-**本次发布时：真实模型返回待填 Key 后验证。** 可以预先打开两个作品，在各页输入短期凭证。以下操作约一分钟可发起两次调用，返回时间取决于模型。
+**班级模型一分钟验收。** 任选一个作品保存连接，在同一浏览器打开另一个作品。切换时无需重复输入班级凭证。下面两次调用使用本班实际网关。
 
-1. **Study Desk**：打开 **Notebook → Load example notes**，将一个实验数值改为自己选的新值，再点 **Generate quiz from notes**。应看到 **AI-generated quiz**。答一题，核对引用确实来自修改后的笔记。再点 **Ask why** 提一个后续问题。预置练习单独标记，不能代替此项。
+1. 在 **Study Desk → Notebook → New notebook** 把笔记本命名为“生物”，笔记写“猫科”，选 **4 / Mixed formats / Notes + topic knowledge**，点 **Generate quiz from notes**。核对 4 题各有一种题型，第 4 题可自己作答和核对评分要点。再用一段有多条事实的课堂记录选 **My notes only**，核查引用能在原文中找到。
 2. **Field Trip Atlas**：在 **Edit trip** 使用家庭示例，选择预报覆盖内的两天，点 **Plan with AI**。应出现 **Preview your AI itinerary**；点 **Use this itinerary**，查看两天的当地时间安排、每站活动以及餐饮和交通。改顺序并导出。
 3. 教师需要检查调用时，可在浏览器开发者工具 **Network** 只查看 `chat/completions` 的状态、模型名与返回结构。成功证据是 HTTP 200、真实 `choices[0].message.content` 和页面中的新内容。授权请求头与笔记不用于公开截图。
 
@@ -199,9 +214,9 @@ git push origin main
 | 看到的现象 | 教师可做的检查 |
 | --- | --- |
 | 学生打开 404 或只有首页能开 | 检查仓库名和 `/study/`、`/travel/` 的结尾斜杠。核对 Pages 的 `main /docs`、最新工作流结果和子目录内的 `index.html`。 |
-| 点击 AI 后弹出设置，或 HTTP 401 / 403 | 检查 Base URL、完整模型名和本页临时凭证。换页或刷新后重新输入。学校服务核对临时凭证到期时间、CORS 来源和上游账户权限。 |
+| 点击 AI 后弹出设置，或 HTTP 401 / 403 | 核对网关地址和模型，在设置里查看密码框是否显示“已为此网址保存”。换网址需输入对应班级 Key；到期或撤销的 Key 需由学校更新。共享电脑下课后可点 **Disconnect**。 |
 | HTTP 400、429、502、503 或连接超时 | 400 核对模型和输出限额字段；429 稍后再试并查班级限额；502 查学校主机到上游的连接；503 查转发程序的 `UPSTREAM_API_KEY`。本机打不开时先看终端是否仍在运行和端口是否一致。 |
-| 成功返回，但测验或行程提示无效 | 检查模型是否遵循 JSON 格式。测验必须带笔记中逐字存在的引文。行程的日期、景点 ID 和理由代码需通过本地校验。重试时已有行程会保留到新结果校验通过。 |
+| 模型返回后仍提示重试 | 应核对所选题量、题型、答案、依据和题目差异。原文题要求逐字引文；拓展题需标明学科知识来源。行程要通过日期和景点 ID 检查。重试会保留上次完成的作品。 |
 | 预报超时、看到缓存或某天没有天气 | 点 **Refresh forecast**，查看 **NWS updated** 和 **Retrieved**。缓存按城市分开；某日期超出已返回时段，就只能手动规划或由 AI 在天气未知的前提下规划。 |
 | 地图只有标记或部分街道空白 | 查看图面提示，点 **Retry map**。检查学校网络能否访问 `tile.openstreetmap.org`，点 **Fit city** 回到城市。天气源与地图源分别连接。 |
 | 刷新后找不到之前的作业 | 核对浏览器配置文件和网址。本机与线上网站各有独立存储。隐私窗口关闭、清除站点数据、换设备都会影响恢复。课后用导出的 Markdown 留档。 |

@@ -164,3 +164,42 @@
     padding-bottom: 1rem;
   }
 }
+
+.question-head .question-type {
+  font-weight: 650;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.options:has(.written-response) {
+  display: block;
+}
+.written-response {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.rubric-check {
+  display: grid;
+  gap: 0.7rem;
+}
+.rubric-check h2,
+.rubric-check p {
+  margin: 0;
+}
+.rubric-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0.35rem 0;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.rubric-item input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  margin: 0.18rem 0 0;
+}

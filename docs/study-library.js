@@ -1,5 +1,6 @@
 import { t } from "./common.js";
 
+import { correctText } from "./question.js";
 const uid = () => crypto.randomUUID();
 export function newBook(title, text = "") {
   return {
@@ -29,7 +30,14 @@ export function openLibrary(legacy, sample) {
   s.quiz = s.quiz || null;
   s.cards = Array.isArray(s.cards) ? s.cards : [];
   s.review = s.review || null;
-  s.options = { count: 4, depth: "mixed", style: "coach", ...s.options };
+  s.options = {
+    count: 4,
+    depth: "mixed",
+    style: "coach",
+    coverage: "expand",
+    format: "mixed",
+    ...s.options,
+  };
   s.scope = s.scope === "notebook" ? "notebook" : s.quiz ? "quiz" : "notebook";
   for (const round of [...s.rounds, ...(s.quiz ? [s.quiz] : [])]) {
     round.id ||= uid();
@@ -154,6 +162,8 @@ export function keepCard(s, bookId, label, proposal, now = Date.now()) {
     front: proposal.front.trim(),
     back: proposal.back.trim(),
     evidence: proposal.evidence,
+    support: proposal.support === "topic" ? "topic" : "notes",
+    referenceId: proposal.referenceId || "",
     step: 0,
     due: now,
     last: 0,
@@ -226,6 +236,8 @@ export function cardQuiz(cards, limit = 6, rand = Math.random) {
           "对照下面的笔记原句核查答案。"
         ),
         cardId: c.id,
+        support: c.support || "notes",
+        referenceId: c.referenceId || "",
       };
     });
 }
@@ -242,8 +254,10 @@ export function rememberQuestion(s, q, i) {
     s.books.find((b) => b.id === q.bookId)?.title || q.name,
     {
       front: item.question,
-      back: item.options[item.correct],
+      back: correctText(item),
       evidence: item.evidence,
+      support: item.support,
+      referenceId: item.referenceId,
     }
   );
 }
@@ -254,7 +268,20 @@ export function packBook(s, book) {
     title: book.title,
     notes: book.text,
     cards: bookCards(s, book.id, true).map(
-      ({ front, back, evidence, step, due, last, reviews, paused }) => ({
+      ({
+        front,
+        back,
+        evidence,
+        support,
+        referenceId,
+        step,
+        due,
+        last,
+        reviews,
+        paused,
+      }) => ({
+        support: support === "topic" ? "topic" : "notes",
+        referenceId: referenceId || "",
         paused: !!paused,
         front,
         back,
@@ -285,6 +312,8 @@ export function importBook(s, data) {
         !c.back.trim() ||
         !str(c.evidence, 1400) ||
         !c.evidence.trim() ||
+        (c.support != null && !["topic", "notes"].includes(c.support)) ||
+        (c.referenceId != null && !str(c.referenceId, 48)) ||
         (c.paused != null && typeof c.paused !== "boolean") ||
         !Number.isInteger(c.step) ||
         c.step < 0 ||

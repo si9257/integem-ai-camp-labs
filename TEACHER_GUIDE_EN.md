@@ -23,12 +23,19 @@ On a phone, the bottom tabs are **Practice / Notebook / Tutor / Progress** and *
 
 2. Select **Make recall cards**. Edit the first prompt to *What did the class measure on the sunny court?* Expand **Source line** to check the observation. Select **Save & practice**. Think or type a guess before **Reveal answer**. **Again** schedules another look in ten minutes. The first **Remembered** schedules a day, with longer intervals after later successful recalls. These ratings are the student's own judgment.
 3. Use **Notebook → Manage cards** to edit or pause a card. Open **Quiz my cards**. Miss the first question on purpose and use the hint for a second attempt. **Find in source** highlights the line. **Ask why** shows both choices and the evidence. With class AI connected, ask whether these observations establish shade as the only cause.
-4. Select **At the end** in **Quiz setup** for a test with delayed feedback. Choose **Apply an idea** or **Compare evidence**, then **Generate quiz from notes** for new AI questions. Every model quote must match the notes. Add more observations if the source is too short. A local card quiz can have fewer questions than the selected target when the notebook has fewer distinct answers.
+4. In **Quiz setup**, choose **At the end** for delayed feedback. **Question sources → My notes only** checks quotations against the notebook. The default **Notes + topic knowledge** uses the notebook title as subject context and expands the topic in the notes. Choose mixed or single formats under **Question formats**, then **Generate quiz from notes**. A local card quiz uses as many distinct answers as the notebook provides.
 5. In **Progress**, reopen a past round, inspect the first attempt and retry missed questions. Create a second subject with **New notebook** and refresh. **Notebook files & name → Export notebook backup** saves one notebook, its cards and their due dates. **Import a notebook copy** adds a separate notebook on another device. **Export learning record** in Progress makes a readable Markdown file with notes, answers and tutor conversations. Have students review it before sharing.
 
 At home, making cards, retrieving answers, taking card quizzes and importing a backup work without a class AI connection. Due reviews appear when the Practice room opens. AI questions and tutor conversations need the reachable school gateway in section 4. Have learners review proposed cloze prompts carefully when using prose notes.
 
 See the [student task walkthrough](STUDENT_WALKTHROUGH.md). Product and teaching references include [Quizlet Learn](https://help.quizlet.com/hc/en-us/articles/360030986971-Studying-with-Learn), [Anki studying](https://docs.ankiweb.net/manual/studying), [Khan Academy mastery feedback](https://support.khanacademy.org/hc/en-us/articles/115002552631-What-are-Course-and-Unit-Mastery), and the [IES practice guide](https://ies.ed.gov/ncee/wwc/PracticeGuide/1).
+
+## A five-minute biology lesson from “cat family”
+
+1. Create a notebook titled *Biology* with *cat family* as its entire text. Keep **4 / Mixed formats / Notes + topic knowledge**. Students may also enter the subject and topic in Chinese.
+2. Give the quiz to a partner. Possible tasks include reading the scientific names of a lion and a tiger, recalling how a cheetah steers, assessing a statement about social behavior, and explaining a snow leopard’s camouflage. The model can produce different questions each time.
+3. Have the partner type answers before checking. Blanks accept the listed equivalent answers. For a short answer, the learner checks each idea in a rubric against their own explanation. Covering all ideas earns one quiz point. Results identify self-assessed items. In test mode the rubric opens after all answers have been submitted.
+4. Compare **From the source** and **Topic knowledge**. The first links to the matching notebook passage. The second gives a teaching point and links to a curated reading when available. Other topics without a curated reference are labeled as AI topic explanations. The paper worksheet keeps answers separate and the teacher key includes the rubric. [ITIS genus record](https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=180592) · [Smithsonian cheetah](https://nationalzoo.si.edu/animals/cheetah) · [San Diego Zoo snow leopard](https://zoo.sandiegozoo.org/animals/snow-leopard)
 
 ## Print a student worksheet or a recall deck
 
@@ -43,7 +50,7 @@ Choose **Print / Save PDF**, then select a printer or a PDF destination in the d
 
 ## What the class sees during AI generation
 
-Students can paste the full text of their notes. The app sets no character minimum or maximum. A single factual observation can support a question. The model may produce fewer questions when the notes contain little evidence. For a long notebook, the app reads every section in separate model requests, checks quotations against the original text and samples evidence across sections for the final quiz. Allow for multiple requests on the class gateway and export a backup of large notebooks. Available storage depends on the device.
+Paste a full reading or just a topic like “cat family.” AI sets must contain the selected 3, 4 or 6 questions. Long notes are read in sections and their excerpts checked. A structural error or wrong count gets one repair request. Section reading and repairs each use a gateway request. If **My notes only** has too little evidence, add facts or enable topic expansion. Device storage varies. Export a backup of long notebooks.
 
 After **Generate quiz from notes** or **Plan with AI**, an animated panel names the task and shows elapsed time. Longer notebooks show the current section and multiday itineraries show the date batch. Streaming gateways also report how many characters have actually arrived. Gateways that send the reply all at once, including the teacher relay, show the task and clock while waiting. Keep the tab open. Refreshing or leaving interrupts the unfinished request. **Stop generating** lets a student cancel and retry with their notes or adopted trip intact.
 
@@ -92,13 +99,21 @@ The classroom build at `2f079cb` was published from `main /docs`. [First deploym
 
 ## 4. Connect AI for the classroom or for home
 
-Both labs send `model` and `messages` to the OpenAI-compatible `POST /v1/chat/completions` endpoint and read `choices[0].message.content` for a buffered reply or assemble `choices[0].delta.content` for a streaming reply. They share the saved Base URL and model ID on the same origin and browser. A short-lived class credential stays in the current page’s memory. Paste it again after refreshing or switching projects. Notes, results and trips use browser-local storage. An AI action sends the relevant notes or trip context to the specified service. Use the supplied notes and a fictional family for demonstrations.
+Both labs use the OpenAI-compatible `POST /v1/chat/completions` endpoint. Open **AI settings** in either lab, enter the gateway Base URL, model ID and class API key, then select **Save connection**. The default model ID is `openai/gpt-6-luna`. Use a gateway that serves that ID. Both apps share the saved connection in this browser profile across refreshes, tab closures and app switches. A key entered only in memory in an earlier release must be saved once in this version. Class keys expire on the school’s schedule.
 
 | What the school has | Teacher setup | Student experience |
 | --- | --- | --- |
 | A CORS-enabled school AI gateway | Supply its HTTPS base, exact model ID and a limited, short-lived class credential. | Open Pages, select **AI settings**, fill the fields and **Save connection**. |
 | A long-term provider key for a classroom demonstration | Run the bundled relay on the teacher’s computer with the key in a private environment file. | The teacher projects the local course site. Both apps receive the relay URL and model automatically. |
 | Students need AI at home | Use an internet-reachable school HTTPS gateway, or put this relay behind the school’s existing HTTPS reverse proxy. | Students use the same public Pages URLs and connect to the school gateway. |
+
+### Where the connection is saved
+
+The class key is bound to its endpoint and encrypted with Web Crypto in browser site data. It stays out of the repository, learning records, trips and share links. A different browser, profile or private window has its own storage. Closing the last private window discards that private session. **Disconnect** or clearing this site's data removes the saved connection. Clearing only cached images and files usually retains it. Use limited, expiring class credentials on shared computers. Keep long-term provider keys in the relay below.
+
+### Classroom content checks
+
+Quiz generation, tutoring, trip planning and revisions apply the same English and Chinese checks to inputs and complete model replies before display. A blocked request shows a brief student-suitability message. Schools can add phrases in `docs/config.js` under `blockedTerms` or in the relay's comma-separated `CLASSROOM_BLOCKED_TERMS`. Also configure moderation on a school-operated gateway and test examples from your classroom.
 
 ### Local demonstration with a private key
 
@@ -173,9 +188,9 @@ Students can open the map without an account, key or device-location permission.
 
 ## 6. One-minute checks after credentials are ready
 
-**Real model responses are pending credentials.** Open both tabs and enter the short-lived credential on each first. These steps take about a minute to initiate. Allow the provider time to return its answers.
+**One-minute classroom model check.** Save the connection in either lab and open the other in the same browser. Both calls below use the class gateway and the single saved class credential.
 
-1. **Study Desk**: Open **Notebook → Load example notes**, change a measured number to a value of your choice, then **Generate quiz from notes**. Look for **AI-generated quiz**, answer a question and cross-check its quotation against the edited source. Try a follow-up with **Ask why**. Prepared practice has a separate label.
+1. In **Study Desk → Notebook → New notebook**, name it *Biology*, enter *cat family* and choose **4 / Mixed formats / Notes + topic knowledge**. Generate a quiz and verify four different formats. Submit the short answer in your own words and compare it with the rubric. Next, use a fact-rich classroom paragraph and select **My notes only** to check the exact quotes.
 2. **Field Trip Atlas**: In **Edit trip**, load the family example, select two covered dates and choose **Plan with AI**. Look for **Preview your AI itinerary**, select **Use this itinerary**, and check each date’s schedule, family activity, meal and transfer. Reorder a stop and export.
 3. For network-level confirmation use browser developer tools → **Network**. Check the status of `chat/completions`, model ID and response shape. Evidence includes HTTP 200, actual `choices[0].message.content` and newly rendered content. Keep authorization headers and student notes out of shared screenshots.
 
@@ -199,9 +214,9 @@ git push origin main
 | Symptom | What to check |
 | --- | --- |
 | 404, or only the home page loads | Include the repository name, `/study/` or `/travel/` and the final slash. Check `main /docs`, the latest run and the nested `index.html`. |
-| AI settings open unexpectedly, or 401/403 | Check the URL, model and current page’s token. Re-enter it after a refresh or navigation. On the school service check token expiry, allowed origin and provider permissions. |
+| AI settings open unexpectedly, or HTTP 401/403 | Check the URL and model. The password field can show **Saved for this URL**. A changed endpoint needs its own class key. Ask the school for a replacement when the key expires or is revoked. On a shared workstation select **Disconnect** at the end of class. |
 | 400, 429, 502, 503 or a timeout | For 400 check model/limit parameters. For 429 wait and check the class limit. For 502 check the school host’s upstream connection. For 503 check `UPSTREAM_API_KEY`. If the local page is unreachable, check the terminal and port. |
-| A model replied, but the app rejected the result | The quiz must contain four distinct choices and exact source quotations. Trips require matching dates, known place IDs and permitted reasons. Retry with a JSON-capable model. The current trip is preserved until a replacement validates. |
+| A model replied, but the app rejected the result | Check the selected number, formats, answer structure and distinct prompts. Note-based questions require exact supporting quotes. Extensions identify their topic knowledge. Trips require matching dates and venue IDs. A failed retry keeps the most recent completed work. |
 | Forecast timed out, is cached, or misses a date | Use **Refresh forecast**. Compare **NWS updated** with **Retrieved**. Each city keeps its own cache. Plan manually or ask AI to plan with explicitly unknown weather on uncovered dates. |
 | Street tiles are missing | Use **Retry map**, check access to `tile.openstreetmap.org` and use **Fit city** to return to the venues. Weather and street tiles come from separate services. |
 | A record disappeared | Verify the browser profile and origin. A local site and the Pages site have separate storage. Closing a private window, clearing site data or changing devices affects recovery. Keep a Markdown export for class records. |

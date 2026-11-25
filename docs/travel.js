@@ -26,7 +26,13 @@ import {
 } from "./app-ui.js?v=paper1";
 import { tripDate } from "./trip-brief.js?v=student5";
 import { familyLink, shareTrip, openFamily } from "./family.js";
-import { configured, openAISettings } from "./ai.js?v=paper1";
+import {
+  configured,
+  openAISettings,
+  checkClassroomText,
+  allowedInClass,
+  classroomNotice,
+} from "./ai.js?v=class2";
 import { createPlaceMap, osmPlaceURL } from "./city-map.js";
 import { cities, interests, setting } from "./places.js";
 import {
@@ -59,7 +65,7 @@ import {
   budgetNames,
 } from "./trip-studio.js?v=student5";
 import { startGeneration, untilCancelled } from "./generation.js";
-import { draftWithModel } from "./trip-agent.js?v=paper1";
+import { draftWithModel } from "./trip-agent.js?v=class2";
 if (!document.querySelector("link[data-trip-studio]"))
   document.head.append(
     el("link", {
@@ -1241,6 +1247,15 @@ function startPlanner() {
       );
       return;
     }
+    if (
+      info.source === "ai" &&
+      !allowedInClass(
+        JSON.stringify([info.title, list.map((stop) => stop.focus)])
+      )
+    ) {
+      itinerary.replaceChildren(el("p", { role: "status" }, classroomNotice()));
+      return;
+    }
     const title =
       list.length && (!info.language || info.language === lang)
         ? info.title
@@ -1478,6 +1493,18 @@ function startPlanner() {
       refinement.focus();
       return;
     }
+    if (mode !== "guide") {
+      try {
+        [state.brief, state.budget, request, ...state.interests].forEach(
+          checkClassroomText
+        );
+      } catch (e) {
+        const target = revise ? planStatus : tripStatus;
+        message(target, e.message, true);
+        target.scrollIntoView({ block: "nearest" });
+        return;
+      }
+    }
     const question = revise ? request : state.brief;
     const wantsItinerary =
       /itinerary|plan (?:a|my|our|the|both)|plan.{0,15}days|规划|安排行程|安排.{0,6}[天日]|行程/i.test(
@@ -1586,7 +1613,9 @@ function startPlanner() {
               weatherStatus: weatherMode,
               updated: forecast?.updated || null,
               base: baseHotel(),
-              history: state.requests[state.city] || [],
+              history: (state.requests[state.city] || []).filter((h) =>
+                allowedInClass(h.request)
+              ),
               stillCurrent: () => revision === stamp,
               job,
             });
@@ -1620,6 +1649,18 @@ function startPlanner() {
     }
   }
   function exportTrip() {
+    if (
+      dates().some(
+        (d) =>
+          meta()[d]?.source === "ai" &&
+          !allowedInClass(
+            JSON.stringify([meta()[d]?.title, stops(d).map((s) => s.focus)])
+          )
+      )
+    ) {
+      message(planStatus, classroomNotice(), true);
+      return;
+    }
     const c = city(),
       all = dates(),
       h = baseHotel(),

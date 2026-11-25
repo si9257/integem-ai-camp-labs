@@ -1,6 +1,6 @@
 import { lang, t, parseJSON } from "./common.js";
 import { closedOn, validateDraft, fareInfo } from "./trip-engine.js";
-import { chat } from "./ai.js?v=paper1";
+import { chat } from "./ai.js?v=class2";
 
 export async function draftWithModel({
   city,

@@ -1,5 +1,14 @@
 import { el, btn, field, t } from "./common.js";
 
+import {
+  written,
+  typeOf,
+  typeLabel,
+  correctText,
+  sourceLabel,
+  referenceFor,
+} from "./question.js";
+import { firstRight } from "./round.js?v=class2";
 const letter = (i) => String.fromCharCode(65 + i);
 const checkbox = (label, onchange) => {
   const input = el("input", { type: "checkbox", onchange });
@@ -26,8 +35,7 @@ function quizPages(q, mode, missed) {
   const items = q.questions
     .map((item, i) => ({ item, i }))
     .filter(
-      ({ item, i }) =>
-        !missed || (q.answers[i] != null && q.answers[i] !== item.correct)
+      ({ item, i }) => !missed || (q.answers[i] != null && !firstRight(q, i))
     );
   const n =
     items.length + t(items.length === 1 ? " question" : " questions", " 道题");
@@ -43,8 +51,8 @@ function quizPages(q, mode, missed) {
           "p",
           { cls: "paper-directions" },
           t(
-            "Circle one answer for each question. Use the line to explain your choice.",
-            "每题圈选一个答案，并在横线上写下选择依据。"
+            "Circle choices, fill in missing words, and write explanations in the spaces provided.",
+            "选择与判断题请圈选答案，填空与简答题请在留白处书写。"
           )
         ),
         ...items.map(({ item, i }) =>
@@ -52,14 +60,18 @@ function quizPages(q, mode, missed) {
             "section",
             { cls: "paper-question" },
             el("h3", {}, i + 1 + ". " + item.question),
-            el(
-              "ul",
-              { cls: "paper-choices" },
-              ...item.options.map((o, k) =>
-                el("li", {}, el("b", {}, letter(k) + "."), o)
-              )
-            ),
-            el("div", { cls: "paper-write-line", "aria-hidden": "true" })
+            written(item)
+              ? el("small", {}, typeLabel(typeOf(item)))
+              : el(
+                  "ul",
+                  { cls: "paper-choices" },
+                  ...item.options.map((o, k) =>
+                    el("li", {}, el("b", {}, letter(k) + "."), o)
+                  )
+                ),
+            ...Array.from({ length: typeOf(item) === "short" ? 4 : 1 }, () =>
+              el("div", { cls: "paper-write-line", "aria-hidden": "true" })
+            )
           )
         )
       )
@@ -78,10 +90,19 @@ function quizPages(q, mode, missed) {
             el(
               "p",
               { cls: "key-choice" },
-              letter(item.correct) + ". " + item.options[item.correct]
+              (written(item) ? "" : letter(item.correct) + ". ") +
+                correctText(item)
             ),
             el("p", {}, item.explanation),
-            el("blockquote", {}, item.evidence)
+            ...(item.rubric || []).map((p) => el("p", {}, "• " + p)),
+            el("blockquote", {}, sourceLabel(item) + " · " + item.evidence),
+            referenceFor(item)
+              ? el(
+                  "small",
+                  {},
+                  referenceFor(item).label + " · " + referenceFor(item).url
+                )
+              : null
           )
         )
       )
@@ -133,7 +154,9 @@ function cardPage(title, cards, blank, includeSource) {
           blank
             ? el("div", { cls: "recall-lines", "aria-hidden": "true" })
             : el("p", {}, c.back),
-          !blank && includeSource ? el("blockquote", {}, c.evidence) : null
+          !blank && includeSource
+            ? el("blockquote", {}, sourceLabel(c) + " · " + c.evidence)
+            : null
         )
       )
     )
@@ -190,8 +213,7 @@ export function printStudio(returnTo) {
         model.round.complete &&
         model.round.questions.some(
           (q, i) =>
-            model.round.answers[i] != null &&
-            model.round.answers[i] !== q.correct
+            model.round.answers[i] != null && !firstRight(model.round, i)
         )
       )
         controls.append(missed.label);

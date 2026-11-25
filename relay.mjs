@@ -1,5 +1,10 @@
 // Node 22+; run from this repository: node --env-file=.env relay.mjs
 import http from "node:http";
+import {
+  unsuitable,
+  withClassroomPolicy,
+  safetyInstruction,
+} from "./docs/classroom-safety.js";
 import { readFile } from "node:fs/promises";
 import { timingSafeEqual, createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
@@ -9,7 +14,13 @@ const env = process.env;
 const port = Number(env.PORT || 8787);
 if (!Number.isInteger(port) || port < 1 || port > 65535)
   throw Error("PORT must be 1–65535");
-const model = (env.UPSTREAM_MODEL || "gpt-4o-mini").trim();
+const model = (env.UPSTREAM_MODEL || "openai/gpt-6-luna").trim();
+const blockedTerms = (env.CLASSROOM_BLOCKED_TERMS || "")
+  .split(/[,，\n]/)
+  .map((s) => s.trim())
+  .filter(Boolean);
+const classroomBlocked = (res) =>
+  json(res, 422, { error: { code: "classroom_unsuitable" } });
 const providerKey = env.UPSTREAM_API_KEY || "";
 const token = env.CLASS_TOKEN || "";
 const expiry = Date.parse(env.CLASS_TOKEN_EXPIRES || "");
@@ -75,6 +86,9 @@ const files = new Set([
   "common.js",
   "home.js",
   "ai.js",
+  "ai-connection.js",
+  "classroom-safety.js",
+  "question.js",
   "sample.js",
   "study.js",
   "study-print.js",
@@ -230,6 +244,17 @@ async function upstreamReply(req, res) {
     return json(res, 400, {
       error: "Check the configured model, message count and length",
     });
+  if (
+    msgs.some((m) =>
+      unsuitable(
+        m.role === "system" && m.content.startsWith(safetyInstruction)
+          ? m.content.slice(safetyInstruction.length)
+          : m.content,
+        blockedTerms
+      )
+    )
+  )
+    return classroomBlocked(res);
   usage = usage.filter((time) => time > Date.now() - 3600000);
   if (inFlight >= 4 || usage.length >= hourlyCap)
     return json(res, 429, { error: "Class limit reached" });
@@ -242,7 +267,9 @@ async function upstreamReply(req, res) {
   try {
     const outgoing = {
       model,
-      messages: msgs.map(({ role, content }) => ({ role, content })),
+      messages: withClassroomPolicy(
+        msgs.map(({ role, content }) => ({ role, content }))
+      ),
       stream: false,
     };
     // Some compatible servers accept only the older max_tokens spelling.
@@ -282,6 +309,12 @@ async function upstreamReply(req, res) {
     }
     const responseText = Buffer.concat(pieces).toString("utf8");
     if (!upstream.ok) {
+      if (
+        /content_filter|content_policy_violation|safety_block/i.test(
+          responseText
+        )
+      )
+        return classroomBlocked(res);
       // Share only a stable error category, never the provider's raw message.
       const tooLong =
         upstream.status === 413 ||
@@ -296,6 +329,12 @@ async function upstreamReply(req, res) {
     }
     const choice = JSON.parse(responseText).choices?.[0];
     const answer = choice?.message?.content;
+    if (
+      choice?.message?.refusal ||
+      ["content_filter", "safety"].includes(choice?.finish_reason) ||
+      unsuitable(answer, blockedTerms)
+    )
+      return classroomBlocked(res);
     if (typeof answer !== "string" || !answer.trim())
       throw Error("Missing reply");
     json(res, 200, {
@@ -348,6 +387,8 @@ export async function handleRequest(req, res) {
           ? ""
           : 'window.CAMP_CONFIG=Object.freeze({apiBase:location.origin+"/v1",model:' +
               JSON.stringify(model) +
+              ",blockedTerms:" +
+              JSON.stringify(blockedTerms) +
               "});"
       );
     }

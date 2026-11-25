@@ -1,3 +1,4 @@
+import { sourceLabel } from "./question.js";
 import {
   el,
   btn,
@@ -9,7 +10,7 @@ import {
   t,
   prettyTime,
 } from "./app-ui.js";
-import { draftCards, gradeRecall } from "./study-library.js?v=paper1";
+import { draftCards, gradeRecall } from "./study-library.js?v=class2";
 
 export function showQuote(title, paragraph, quote) {
   sheet(title, (body) => {
@@ -232,7 +233,7 @@ export function renderRecall(body, s, { save, home, notes }) {
         el("small", {}, t("ANSWER", "答案")),
         el("p", {}, c.back)
       ),
-      el("blockquote", {}, c.evidence),
+      el("blockquote", {}, sourceLabel(c) + " · " + c.evidence),
       el(
         "div",
         { cls: "recall-rate" },
@@ -343,7 +344,7 @@ export function manageCards(s, book, cards, onChange) {
             ),
             field(t("Prompt", "卡片正面"), front),
             field(t("Answer", "答案"), back),
-            el("blockquote", {}, c.evidence),
+            el("blockquote", {}, sourceLabel(c) + " · " + c.evidence),
             el("div", { cls: "actions" }, edit, pause)
           );
         })

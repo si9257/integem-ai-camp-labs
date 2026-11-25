@@ -4,7 +4,7 @@ Two bilingual student projects for the Integem summer studio. The sites start in
 
 | Lab | Ages | Student project |
 | --- | --- | --- |
-| [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | 13–17 · one week | Keep subject notebooks, practice personal recall cards, generate evidence-backed quizzes, revisit misses and take a backup home. |
+| [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | 13–17 · one week | Keep subject notebooks, practice personal recall cards, generate mixed-format quizzes from a topic or source notes, revisit misses and take a backup home. |
 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | 13–18 · two weeks | Plan 1–7 family days around 36 real sights. Compare live rooms, follow each leg, book admission and share the schedule. |
 
 [Student task walkthrough](STUDENT_WALKTHROUGH.md) · [Bilingual daily curriculum](DAILY_CURRICULUM.md) · [Course home](https://si9257.github.io/integem-ai-camp-labs/) · [中文教师手册](TEACHER_GUIDE.md) · [English teacher guide](TEACHER_GUIDE_EN.md)
