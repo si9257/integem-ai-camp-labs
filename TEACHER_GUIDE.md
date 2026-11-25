@@ -5,7 +5,7 @@
 | 班级 | 学生作品 | 第一节课结束时，学生能做什么 |
 | --- | --- | --- |
 | 一周，13–17 岁 | [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | 用自己的笔记出题，指出解释所依据的原文，并针对一次错答追问。 |
-| 两周，13–18 岁 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | 为一家人安排 1–3 天游览，解释天气如何影响选点，手动调整并带走行程。 |
+| 两周，13–18 岁 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | 为一家人安排 1–7 天游览，解释天气如何影响选点，手动调整并带走行程。 |
 
 学生打开网址即可使用，默认英文，右上角可切换中文。第一堂课可以先做预置题或手动规划。要演示根据任意笔记出题、导师追问和 AI 行程，请先完成下文的 AI 配置。
 
@@ -28,7 +28,7 @@
 | `docs/study/index.html`、`docs/study.js`、`docs/sample.js` | 学习页、出题、判分、导师和原创托盘实验 | 改示例笔记，检查引用是否还能在原文中找到 |
 | `docs/travel/index.html`、`docs/travel.js` | 表单、偏好解析、AI 规划、每日排序和导出 | 改规划提示词或行程编辑方式 |
 | `docs/places.js`、`docs/weather.js` | 三城景点与官网、NWS 请求和按目的地时区筛选 | 核查景点来源，跟踪 `/points` 返回的预报链接 |
-| `docs/city-map.js`、`docs/cover-*.webp` | 等比例街道地图、景点标记、当天连线，以及四张本地封面插画 | 景点经纬度在 `places.js`。调整地图呈现时保留地图署名。 |
+| `docs/city-map.js`、`docs/cover-*.webp` | 等比例街道地图、景点标记、当天连线，以及四张本地封面插画 | 景点经纬度在 `guide-data.js`。调整地图呈现时保留地图署名。 |
 | `docs/common.js`、`docs/ai.js`、`docs/camp.css`、`docs/config.js` | 两站的界面、本地保存、AI 连接和样式 | 改公开的网关地址、模型名或配色 |
 | `relay.mjs`、`server.env.example`、`.gitignore` | 教师电脑或学校服务的转发程序、空白环境模板、Git 排除规则 | 在学校自己的 `.env` 里配置长期 Key |
 | `README.md`、`TEACHER_GUIDE.md`、`TEACHER_GUIDE_EN.md` | 项目入口、中文和英文教师教程 | 记录本班的部署和验收 |
@@ -117,7 +117,7 @@ location = /v1/chat/completions {
 | 0–4 分钟 | 点城市封面上的 **Edit trip → Use family example → Apply trip brief**。选旧金山、两天，设定日期，点 **Done**。 | 在首屏找到当天、天气入口和景点。让学生用 **Indoors / Outdoors** 判断哪两站能作为雨天候选。 |
 | 4–8 分钟 | 点底栏 **Weather**，找出 NWS 网格来源、预报覆盖日期、单位和更新时间。把出发日临时改到两个月后，再换回。 | 学生展示预报范围外的逐日提示。有缓存时，读出获取时间。 |
 | 8–14 分钟 | 在 **Explore** 选第 1 天，用景点卡的 **＋** 加入 Presidio Tunnel Tops、Golden Gate Park。到 **My trip**，点第一站的 **Indoor alternatives**，对照两个场馆简介与官网，选 Exploratorium，点 **Replace this stop**。 | 第 2 站仍是 Golden Gate Park。用 ↑ 把它移到最前，再到 **Map → Fit day** 检查 1、2 两个图钉，刷新复核。 |
-| 14–17 分钟 | 在 **My trip → Family link** 点 **Preview family view**。再回到学生端用 **Export itinerary** 下载可留存的 Markdown。 | 家长可在另一部手机打开链接，无需账号，能切日期、查官网和单站地图。链接记录分享时的城市、日期和景点顺序，修改后可生成新版。预算、家庭描述和班级凭证不进入分享链接。 |
+| 14–17 分钟 | 在 **My trip → Family link** 点 **Preview family view**。再回到学生端用 **Export itinerary** 下载可留存的 Markdown。 | 家长可在另一部手机打开链接，无需账号，能切日期、查官网和单站地图。新版链接还记录出发时间、节奏、交通偏好、所选酒店、用餐点和每站时长，修改后可生成新版。预算、家庭描述和班级凭证不进入分享链接。 |
 | 17–20 分钟（需模型） | 在 **Explore** 点 **Plan with AI**。已有手动行程时先核对是否替换。请一位家长临时改兴趣，再由学生解释并调整一站。 | 核对当日每一站的 ID 来自当前城市的已查证景点，理由能在偏好或可用预报中找到依据。 |
 
 投屏时可直接打开[旧金山两日家庭展示样例](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sf~2026-11-29~golden-gate.exploratorium~academy.tunnel-tops)。这份手工样例第一天去 Golden Gate Park 和 Exploratorium，第二天去 California Academy of Sciences 和 Presidio Tunnel Tops。家长可用它练习切换日期和查看场馆地图。
@@ -126,7 +126,7 @@ location = /v1/chat/completions {
 
 ### 用地图讲“先去哪一站”
 
-1. 选 **Seattle → Map → Fit city**。让学生从四个字母标记中找到 Seattle Aquarium 和 Pacific Science Center，分别点标记、读名称，然后按 **Add to day 1**。
+1. 选 **Seattle → Map → Fit city**。让学生从十二个字母标记中找到 Seattle Aquarium 和 Pacific Science Center，分别点标记、读名称，然后按 **Add to day 1**。
 2. 打开 **My trip** 调换两站顺序，再选 **Map → Fit day**。数字和虚线显示所选日期的游览顺序。场馆图钉标在代表位置；实际步行路线、入口和无障碍通道请核对场馆官网。
 3. 手机可用 **Map** 单独查看地图，拖动平移，用双指或 **+ / −** 缩放。桌面也支持点入地图后用方向键和加减键。展开标记详情中的 **OpenStreetMap ↗** 可查看该地点；导出的 Markdown 同样附有地点链接。
 
@@ -137,7 +137,7 @@ location = /v1/chat/completions {
 **本次发布时：真实模型返回待填 Key 后验证。** 可以预先打开两个作品，在各页输入短期凭证。以下操作约一分钟可发起两次调用，返回时间取决于模型。
 
 1. **Study Desk**：打开 **Notebook → Load example notes**，将一个实验数值改为自己选的新值，再点 **Generate quiz from notes**。应看到 **AI-generated quiz**。答一题，核对引用确实来自修改后的笔记。再点 **Ask why** 提一个后续问题。预置练习单独标记，不能代替此项。
-2. **Field Trip Atlas**：在 **Edit trip** 使用家庭示例，选择预报覆盖内的两天，点 **Plan with AI**。应出现 **AI itinerary saved**，有两个日期，每站均在当城手册中，理由符合给出的兴趣或天气。改顺序并导出。
+2. **Field Trip Atlas**：在 **Edit trip** 使用家庭示例，选择预报覆盖内的两天，点 **Plan with AI**。应出现 **Preview your AI itinerary**；点 **Use this itinerary**，查看两天的当地时间安排、每站活动以及餐饮和交通。改顺序并导出。
 3. 教师需要检查调用时，可在浏览器开发者工具 **Network** 只查看 `chat/completions` 的状态、模型名与返回结构。成功证据是 HTTP 200、真实 `choices[0].message.content` 和页面中的新内容。授权请求头与笔记不用于公开截图。
 
 ## 7　更新、部署检查和恢复上一版
@@ -188,7 +188,7 @@ git push origin main
 | 转发程序 | Node.js 24.22.3 启动成功。请求处理器测试覆盖静态入口、CORS、无 Key、临时凭证和过期、模型过滤、目标路径、班级限额。上游为本机测试替身。受执行环境回环连接限制，本次 Edge 到本机端口的端到端访问未通过，应在授课电脑按第 4 节复核。 |
 | 真实 AI | 两个网站均未提供真实凭证。出题、连续追问和 AI 旅行规划按第 6 节验收。 |
 
-学生任务与景点简介由 Integem 原创。三张城市封面、学习主题插画和十二张单站插画均随项目本地加载；城市插画用于辨识目的地，街道与地点坐标可在互动地图核对。景点卡链接到场馆官网，地图署名为 © OpenStreetMap contributors。天气取自美国国家气象局官方返回，页面提供来源、时区和更新时间。[NWS API 说明](https://www.weather.gov/documentation/services-web-api) · [NWS 使用说明](https://www.weather.gov/disclaimer) · [GitHub Pages 发布源说明](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+学生任务与景点简介由 Integem 原创。三张城市封面、学习主题插画和三十六张单站插画均随项目本地加载；城市插画用于辨识目的地，街道与地点坐标可在互动地图核对。景点卡链接到场馆官网，地图署名为 © OpenStreetMap contributors。天气取自美国国家气象局官方返回，页面提供来源、时区和更新时间。[NWS API 说明](https://www.weather.gov/documentation/services-web-api) · [NWS 使用说明](https://www.weather.gov/disclaimer) · [GitHub Pages 发布源说明](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
 ### 手机版发布与本次课堂验收
 
@@ -197,3 +197,35 @@ git push origin main
 - Edge 手机视口实测，Storm lab 首次错选 A 后只显示提示；刷新后选 C，完成全套得 3/4，提示后答对 1 题。重练错题得 1/1。下载的 Markdown 记录包含两次选择。小屏可展开题目原文和 AI 设置。
 - 旅行页在旧金山、华盛顿和西雅图之间切换成功。11 月 29 日的旧金山行程把第一站更换为 Exploratorium，第二站保持 Golden Gate Park。调换顺序后，地图与刷新后的列表一致。天气页显示 NWS MTR/85,105 网格及 11 月 25 日至 12 月 1 日的覆盖日期。选择次年夏日会提示超出范围。
 - 在另一个标签打开只读家庭链接，看到了正确的两站、场馆官网及单站地图，第二天为空；英文、中文两种界面均可切换。下载的旅行 Markdown 包含两日、正确顺序及 NWS 来源。手机用 360 和 390 像素宽度检查，地图另在 768 和 1280 像素宽度检查。测试在 Edge 调整视口完成。真机安装和真实模型返回另行验证。
+
+## 家庭旅行规划实操
+
+投屏时打开[课堂练习行程](https://si9257.github.io/integem-ai-camp-labs/travel/?practice=1)。这里单独保存练习，家长平日使用的行程可从作品原网址打开。
+
+| 给学生的委托 | 在成品中的操作与验收 |
+| --- | --- |
+| 两个成人去旧金山三天，希望少走路 | 在 **Explore** 描述行程，在 **Edit trip** 指定日期、人数、出发时间与节奏。**Plan with AI → Use this itinerary** 采用模型建议。未连接模型时选 **Build a guide itinerary**，预览会注明城市指南来源。 |
+| 第 2 天下午走累了 | 选择 **My trip → Day 2**，在 **Revise this day** 输入“保留上午的博物馆，下午减少一站”，点 **Revise this day with AI**。在预览中核对活动，再采用；比较第一天是否保留。每站的标题、时长和活动会传给模型，选择限于当城已核查的地点。 |
+| 找两晚住宿，对比价格 | 进 **Bookings**，确认入住、退房与人数，按需填整段住宿的美元上限和可退订筛选。儿童入住需要逐人年龄，由家长本人填入。点 **Search OBO room prices** 会将上述搜索条件发给 OBO Travel。整段总价、查询时间、供应商列出的税费和额外收费随报价显示；点该报价的 **View offer on OBO Travel** 核对当前房型和最终条款。查询无需学生注册。 |
+| 设置每天的起点 | 在 **Choose a home base** 对照 3 家独立酒店的街区与客房条件。**Use as my base** 把酒店接到每天首末两段路线。**Check my dates** 为支持日期参数的酒店带入日期和人数；其他官网的 **Rooms & reservations** 需自行选择日期。单日游没有住宿夜。 |
+| 坐哪趟车、哪里买票 | 每段 **Get directions** 使用真实起终点及选择的交通方式。**Bookings → Transportation** 进入运营商路线、当前班次／通告、票价、机场接驳及支付页。时间轴上的交通分钟数是含换乘缓冲的估算。景点的订票、免费时段、普通参观按场馆分别给出。 |
+| 把计划交给家长 | 在 **My trip → Family budget** 填自家的住宿、用餐、入场和交通费用。空白项单独计数。**Export itinerary** 下载逐站活动、交通链接和填写的预算。**Family link** 分享时间表、酒店、路线和用餐点，私人备注、人数、儿童年龄、预算、短期房价及凭证均留在分享内容之外。 |
+
+地图上的虚线只表达顺序。点字母、数字或用上方下拉框选择景点，可在图内看到活动、停留时间、预约入口和添加按钮。按 **×** 或 Esc 关闭详情。在街道图块暂时未加载时，下拉框仍可用。
+
+### 数据来源与故障排查
+
+- OBO Travel 的只读酒店接口支持匿名查询。供应商当前限制同一 IP 每分钟 10 次、每天 150 次实时价格调用。课堂可由教师投屏查询一次。部分库存会先返回，页面会提示稍后可重试。报价只在当前标签内短时显示，最迟在供应商报价 30 分钟后过期。若未收到报价，页面保留带日期的查询以及各酒店自己的订房入口。酒店数据不进入模型提示或导出文件。[接口说明](https://onebookingonline.com/mcp/) · [使用条款](https://onebookingonline.com/api-terms)
+- 所有建议时段均按目的地当地时间排列。已核实的常规开馆时间用于安排等候或提示冲突，节假日与临时变更仍需看场馆官网。交通按线路、乘车人及支付方式计价。到站预测与改道以运营商当日页面为准。[旧金山 Muni](https://www.sfmta.com/getting-around/muni/fares) · [西雅图 Sound Transit](https://www.soundtransit.org/ride-with-us/how-to-pay/fares) · [华盛顿 Metro](https://www.wmata.com/ridertools)
+- 带学生看代码时，从 `docs/trip-agent.js` 的模型输入开始，到 `trip-engine.js` 检查景点 ID、日期和闭馆条件，再比较 `live-rates.js` 的真实酒店响应。中英双语景点、餐饮和酒店来源在 `guide-data.js`。修改地点后到手机地图上点它，核对详情、定位和官网。
+
+### 本次上线与实测记录
+
+[西雅图两日家庭行程 · 可直接打开](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sea~2027-01-19~pike-market.aquarium.sculpture~pacsci.mopop.space-needle!2!0930!transit!balanced!maxwell!pike-chowder.armory-food!95,110,45~105,80,60)。这份教师编排的样例第一天逛派克市场、水族馆与雕塑公园，第二天在西雅图中心参观科学中心、流行文化博物馆与太空针塔。家长可以打开每段交通和门票入口。
+
+1. 保留既有仓库和 Pages 的 `main /docs` 配置。在 GitHub 的 **docs → Add file → Upload files → Choose your files** 选择 10 个程序／样式文件及 24 张新增景点插画，点 **Commit changes**。只选项目文件。[旅行规划与房价功能 ba3400c](https://github.com/si9257/integem-ai-camp-labs/commit/ba3400ce2e6bd853ce5aad81a98e669ce13daf2e)
+2. 在 **docs/travel** 用相同菜单提交 `index.html`。到 **Actions → pages build and deployment**，第 15 次运行中 **build** 与 **deploy** 均为绿色。再次提交时 GitHub 可能取消排队中的上一构建，需检查最新提交的那一行。[入口版本 916a588](https://github.com/si9257/integem-ai-camp-labs/commit/916a5888372ef4f6cfd093a496af3f9db3886e2c) · [Pages 第 15 次发布](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45595694163)
+3. 根据实测增加两处馆内用餐点，校验每天的交通加游览时长、常规闭馆时间并在预览中增加 **Use itinerary & check rooms**。在 **docs** 上传相关的 5 个源文件。教师手册、README、逐日课程和本机转发的静态文件清单通过仓库根目录 **Upload files** 提交。[行程校验 a39dddf](https://github.com/si9257/integem-ai-camp-labs/commit/a39dddf71b02c7d3586adb2f40eb129435d743d5)
+4. 在公开 Pages 用 Edge 验证了手机点图钉和按 Enter 都能显示地点卡；卡片在底栏上方。桌面宽度也能选点。西雅图的两晚、两成人查询从 OBO 返回四条可点击的整段住宿报价，页面展示含税费说明与现场另收费，点其中一条进入相同入住和退房日期的可选房型页。华盛顿预报显示 NWS 的 LWX/96,72 网格和时段。
+5. 在单独的课堂行程上移动一站、选酒店、录入餐饮预算、刷新，再打开家庭链接。实际下载的 Markdown 包含三天日期、交通链接、出发酒店、NWS 来源和录入金额。费用与实时房价没有进入家庭分享链接，供应商房价也没有写入导出文件。
+6. 这次新版验收页没有可用的短期模型连接。真实模型新返回待填 Key 后验证。上文的一分钟测试应看到 **Preview your AI itinerary**，再到 **My trip** 改一天。程序层另行检查了七天分批、无效景点重试和只改一天的响应契约。

@@ -86,3 +86,9 @@ Allow roughly four project hours when the camp day permits. One workable split i
 | Friday | Publish the capstone. A family member changes the brief on the spot. Students adapt the trip, explain one decision using the source data and show code they wrote. | A live link, an exported itinerary, a sourced demonstration and traceable individual contributions. |
 
 [English deployment and AI setup guide](https://github.com/si9257/integem-ai-camp-labs/blob/main/TEACHER_GUIDE_EN.md)
+
+## 两周毕业项目扩展 · Family travel agent
+
+第 6 天，把“带家人玩三天”的委托写成日期、人数、节奏、兴趣、预算与交通条件。第 7 天，用旅行页 **Bookings** 比较真实住宿总价与酒店另收费用，核对一个可订的票务入口。第 8 天，用地图和相邻两站的路线链接核查午餐或换乘是否合理。第 9 天，让另一组在手机上只改一天，验证其他日期是否保留，并测试没有房价、没有天气和凭证到期这三种情况。第 10 天，把只读行程发给家长，解释一个真实报价、一项计划估算，以及最后订票前要对照的官方来源。
+
+On days 6–10, turn a family brief into dates and constraints, compare live room totals with extra charges, check inter-stop directions and lunch placement, revise one day on a phone, then present a read-only trip. Ask each student to identify one supplier quote, one planning estimate and one operator link a parent should check before booking.

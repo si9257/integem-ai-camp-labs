@@ -5,7 +5,7 @@
 | Course | Student site | What learners can show a parent |
 | --- | --- | --- |
 | One week, ages 13–17 | [Study Desk](https://si9257.github.io/integem-ai-camp-labs/study/) | A quiz from their own notes, an evidence quote for an answer, and a conversation about a mistake. |
-| Two weeks, ages 13–18 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | A one- to three-day family itinerary that names real places, uses the available forecast, and can be edited and exported. |
+| Two weeks, ages 13–18 | [Field Trip Atlas](https://si9257.github.io/integem-ai-camp-labs/travel/) | A one- to seven-day family itinerary that names real places, uses the available forecast, and can be edited and exported. |
 
 Students open a link without signing into GitHub. Both projects start in English. The header’s **中文** button switches the interface on that device. You can teach the prepared quiz, live weather and manual planning before connecting a model.
 
@@ -28,7 +28,7 @@ To reproduce the project under your own account, use **Code → Download ZIP** i
 | `docs/study/index.html`, `docs/study.js`, `docs/sample.js` | Study entry, quiz, tutor, and original soil-tray lesson | Replace the sample and verify each quotation against it. |
 | `docs/travel/index.html`, `docs/travel.js` | Family brief, controls, AI plan, day editor and export | Refine a planning constraint or a control. |
 | `docs/places.js`, `docs/weather.js` | Verified places, official links, NWS lookups and local-date matching | Check a venue source or follow a point-to-grid lookup. |
-| `docs/city-map.js`, `docs/cover-*.webp` | Interactive street map, day-order pins and four local illustrations | Venue coordinates live in `places.js`. Keep attribution visible when editing the map. |
+| `docs/city-map.js`, `docs/cover-*.webp` | Interactive street map, day-order pins and four local illustrations | Venue coordinates live in `guide-data.js`. Keep attribution visible when editing the map. |
 | `docs/common.js`, `docs/ai.js`, `docs/camp.css`, `docs/config.js` | Shared navigation, local storage, connection, visual styles and public defaults | Set a public model/address or adjust the palette. |
 | `relay.mjs`, `server.env.example`, `.gitignore` | Teacher/school relay, blank environment template and Git exclusions | Populate the private local `.env`. |
 | `README.md`, `TEACHER_GUIDE.md`, `TEACHER_GUIDE_EN.md` | Project entry and both teacher guides | Record the class release and checks. |
@@ -126,7 +126,7 @@ In week one, students write an indoor filter and connect map pins to itinerary I
 
 ### Teach visit order with the map
 
-1. Choose **Seattle → Map → Fit city**. Ask students to find Seattle Aquarium and Pacific Science Center among the four lettered pins. Select each pin, read its label and choose **Add to day 1**.
+1. Choose **Seattle → Map → Fit city**. Ask students to find Seattle Aquarium and Pacific Science Center among the twelve lettered pins. Select each pin, read its label and choose **Add to day 1**.
 2. Swap the stops in **My trip**, then select **Map → Fit day**. The numbers and dashed line show the visit order for the selected day. Pins represent venues. Check the operator’s site for walking directions, entrances and accessible routes.
 3. On a phone, select **Map** for a dedicated view. Drag to pan and pinch or use **+ / −** to zoom. A keyboard user can focus the map, pan with arrow keys and zoom with plus and minus. The selected place includes **OpenStreetMap ↗**. An exported itinerary includes each stop’s map link too.
 
@@ -137,7 +137,7 @@ Students can open the map without an account, key or device-location permission.
 **Real model responses are pending credentials.** Open both tabs and enter the short-lived credential on each first. These steps take about a minute to initiate. Allow the provider time to return its answers.
 
 1. **Study Desk**: Open **Notebook → Load example notes**, change a measured number to a value of your choice, then **Generate quiz from notes**. Look for **AI-generated quiz**, answer a question and cross-check its quotation against the edited source. Try a follow-up with **Ask why**. Prepared practice has a separate label.
-2. **Field Trip Atlas**: In **Edit trip**, load the family example, select two covered dates and choose **Plan with AI**. Look for **AI itinerary saved**, a section for each date, and reasons attached to verified places. Reorder a stop and export.
+2. **Field Trip Atlas**: In **Edit trip**, load the family example, select two covered dates and choose **Plan with AI**. Look for **Preview your AI itinerary**, select **Use this itinerary**, and check each date’s schedule, family activity, meal and transfer. Reorder a stop and export.
 3. For network-level confirmation use browser developer tools → **Network**. Check the status of `chat/completions`, model ID and response shape. Evidence includes HTTP 200, actual `choices[0].message.content` and newly rendered content. Keep authorization headers and student notes out of shared screenshots.
 
 ## 7. Update a project or recover a previous version
@@ -188,7 +188,7 @@ git push origin main
 | Teacher relay | Node.js 24.22.3 started the relay. In-process request tests covered the static paths, CORS, missing provider key, class authentication and expiry, model restriction, upstream request path and rate cap, using an upstream test fixture. The test environment restricted loopback connections and its Edge-to-localhost check timed out. Recheck on the classroom computer using section 4. |
 | Live model | A real credential was not supplied. Section 6 covers actual quiz generation, contextual follow-ups and AI trip generation. |
 
-Integem created the classroom activities, venue descriptions and AI-assisted illustrations. The three city covers, study artwork and twelve individual venue illustrations ship with the project. Use the interactive map for geographic detail, and follow each place card to the operator’s website. The map credits © OpenStreetMap contributors. NWS supplies the forecast, which shows its source, time zone and update time. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+Integem created the classroom activities, venue descriptions and AI-assisted illustrations. The three city covers, study artwork and thirty-six individual venue illustrations ship with the project. Use the interactive map for geographic detail, and follow each place card to the operator’s website. The map credits © OpenStreetMap contributors. NWS supplies the forecast, which shows its source, time zone and update time. [NWS API](https://www.weather.gov/documentation/services-web-api) · [NWS usage terms](https://www.weather.gov/disclaimer) · [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
 ### Mobile release and classroom acceptance
 
@@ -197,3 +197,35 @@ We used **Add file → Upload files → Choose your files** to place 28 mobile a
 - In the mobile viewport we chose A on the first Storm lab question, read the hint, refreshed and corrected the answer with C. The finished round showed 3/4 on the first try and one recovered after a hint. The missed-only round scored 1/1. The downloaded Markdown kept both attempts. The source sheet and AI connection dialog fit the phone width.
 - We switched among San Francisco, Seattle and Washington, DC. In a November 29 San Francisco plan we replaced the first outdoor stop with Exploratorium and kept Golden Gate Park in second position. After reordering, the map and the reloaded list agreed. The weather screen showed NWS grid MTR/85,105 and coverage from November 25 to December 1. A summer date in the following year displayed the explicit out-of-range message.
 - A separate tab opened a read-only family link with two correctly ordered stops, operator sites, map links and an empty second day. English and Chinese both worked. The downloaded trip included both dates, order and NWS source. We checked 360- and 390-pixel phone widths, plus 768- and 1280-pixel map layouts in Edge. Physical-device installation and real model responses still require a separate check.
+
+## A family trip from brief to bookings
+
+Open the [class practice itinerary](https://si9257.github.io/integem-ai-camp-labs/travel/?practice=1) for the projector. It saves separately from a family’s regular planner.
+
+| Family request | Demonstrate and verify |
+| --- | --- |
+| Plan three easy days in San Francisco for two adults | Describe the trip in **Explore**. In **Edit trip** set dates, guests, start time and pace. Use **Plan with AI → Use this itinerary** to adopt a model proposal. **Build a guide itinerary** works without a model and labels its source. |
+| Keep the museum and shorten day two | Select **My trip → Day 2**, describe the change under **Revise this day**, and choose **Revise this day with AI**. Review before applying. Compare day one with its previous order. The model sees the current trip, preferences, verified activities and available NWS periods. |
+| Find a room for two nights | Open **Bookings**, review dates and guests, then optionally filter by maximum whole-stay total or refundable offers. A parent enters an age for each child in the room. **Search OBO room prices** sends the search details to OBO Travel. Read the total in USD, supplier fee note, time and any partial-result notice. Use **View offer on OBO Travel** for current room terms and final pricing. Students need no account. |
+| Leave from the same hotel each day | In **Choose a home base**, compare the three independent hotel websites. **Use as my base** adds routes to the first stop and back after the last stop. **Check my dates** prefills a supported booking engine. Other **Rooms & reservations** pages ask for dates. A day trip has zero nights. |
+| Decide which train to take and where to buy admission | Each leg’s **Get directions** link carries both endpoints and travel mode. Under **Bookings → Transportation**, open the agency planner, arrivals or advisories, fare rules, payment and airport links. Timeline transfer minutes are planning estimates. Attraction links distinguish general visitor information, admission and timed reservations. |
+| Give the trip to a parent | Type the party’s own lodging, food, admission and transit figures into **My trip → Family budget**. Blank fields count as unfilled. **Export itinerary** includes the daily activities, legs and entered budget. **Family link** shares the schedule, chosen hotel and meal stops. It omits personal notes, head counts, child ages, budget, short-lived room prices and credentials. |
+
+The dashed map line shows stop order. Select a letter or number, or use the place picker, to see the activity, visit length, admission link and add button on the map. Dismiss the card with **×** or Escape. The picker also works while tiles are loading.
+
+### Data and troubleshooting
+
+- OBO Travel allows anonymous read-only searches. Its published anonymous limit is 10 live hotel queries per minute and 150 per day per IP. Project one classroom search. Inventory can arrive in parts. A quote stays in the current tab and expires within 30 minutes of the supplier timestamp. If no verifiable offer returns, use the dated search or an independent hotel’s booking page. Supplier prices stay out of model inputs and exports. [API](https://onebookingonline.com/mcp/) · [Terms](https://onebookingonline.com/api-terms)
+- Times use the destination’s local clock. Where the guide has verified regular hours, the schedule can insert a wait or flag an overrun. Confirm special openings on the linked venue page. Transit fares depend on service, rider and payment method. Use the agency’s current departure and advisory tools on the travel day. [San Francisco](https://www.sfmta.com/getting-around/muni/fares) · [Seattle](https://www.soundtransit.org/ride-with-us/how-to-pay/fares) · [Washington, DC](https://www.wmata.com/ridertools)
+- Follow the model input in `docs/trip-agent.js`, then check the returned dates, IDs and closures in `trip-engine.js`. Compare this with the live supplier response handled in `live-rates.js`. Venue, dining and hotel links for both languages live in `guide-data.js`. After editing a venue, check its details, position and official site on a phone.
+
+### Publication and acceptance record
+
+[Open the two-day Seattle family itinerary](https://si9257.github.io/integem-ai-camp-labs/travel/#trip=sea~2027-01-19~pike-market.aquarium.sculpture~pacsci.mopop.space-needle!2!0930!transit!balanced!maxwell!pike-chowder.armory-food!95,110,45~105,80,60). This teacher-built example visits Pike Place Market, the aquarium and the sculpture park on day one. Day two groups Pacific Science Center, MoPOP and the Space Needle at Seattle Center. Open each leg and admission link to walk through it with a parent.
+
+1. We kept the existing public repository and `main /docs` Pages setting. In **docs → Add file → Upload files → Choose your files**, we selected 10 code/style files and 24 new venue illustrations and clicked **Commit changes**. [Travel and hotel release ba3400c](https://github.com/si9257/integem-ai-camp-labs/commit/ba3400ce2e6bd853ce5aad81a98e669ce13daf2e)
+2. We used the same upload menu under **docs/travel** for `index.html`. Under **Actions → pages build and deployment**, both **build** and **deploy** succeeded in run 15. A newer commit can cancel an earlier pending Pages build. Match the newest commit to its run. [Entry point 916a588](https://github.com/si9257/integem-ai-camp-labs/commit/916a5888372ef4f6cfd093a496af3f9db3886e2c) · [Pages run 15](https://github.com/si9257/integem-ai-camp-labs/actions/runs/45595694163)
+3. After testing, we added two museum cafés, checked full-day duration and known closing times, and added **Use itinerary & check rooms** to the preview. We uploaded the five revised sources under **docs**. The guides, README, curriculum and local relay asset list use **Upload files** at the repository root. [Feasibility checks a39dddf](https://github.com/si9257/integem-ai-camp-labs/commit/a39dddf71b02c7d3586adb2f40eb129435d743d5)
+4. On public Pages, pointer and keyboard selection both opened the map card at phone width, above the bottom bar. Selection also worked on desktop. A two-adult, two-night Seattle search returned four bookable whole-stay offers from OBO, with fee notes. We followed one to available room types with both dates preserved. The Washington weather page showed NWS grid LWX/96,72, with dated periods and units.
+5. In the practice trip we moved a stop, chose a hotel, entered a meal allowance, reloaded and opened the family link. The downloaded Markdown contained three days, directions, the hotel, NWS source and entered amount. The shared URL omitted the budget and live prices. The export omitted supplier quotes.
+6. A short-lived model connection was unavailable in the new acceptance tab. A genuine model reply for this release is pending. Run the one-minute AI check above, confirm **Preview your AI itinerary**, then revise one day in **My trip**. Separate response-contract tests covered seven-day batching, retry after an invalid place ID, and a one-day revision.
