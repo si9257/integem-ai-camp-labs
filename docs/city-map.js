@@ -111,7 +111,11 @@ export function createPlaceMap(addStop) {
     scope = mode;
     pendingFit = mode;
     pendingFocus = null;
-    schedule(true);
+    redraw(true);
+  }
+  function redraw(tiles) {
+    if (visible && view && surface.clientWidth) draw(tiles);
+    else schedule(tiles);
   }
   function schedule(tiles) {
     needsTiles ||= tiles;
@@ -165,7 +169,7 @@ export function createPlaceMap(addStop) {
     zoom = z;
     pendingFit = null;
     scope = "custom";
-    schedule(true);
+    redraw(true);
   }
   function refreshStatus() {
     if (!tileNodes.size) {
@@ -309,6 +313,7 @@ export function createPlaceMap(addStop) {
           x + dx <= w - 18 &&
           y + dy >= 18 &&
           y + dy <= h - 18 &&
+          (x + dx < w - 65 || y + dy > 112) &&
           used.every(([u, v]) => Math.hypot(u - x - dx, v - y - dy) >= 36)
       ) || [0, 0];
       const px = x + offset[0],
@@ -407,7 +412,7 @@ export function createPlaceMap(addStop) {
       scope = "custom";
     }
     renderInspector();
-    schedule(focus);
+    redraw(focus);
   }
   function update(next) {
     const moved = !view || view.city !== next.city;
@@ -424,7 +429,7 @@ export function createPlaceMap(addStop) {
       fit(next.stops.length ? "day" : "city");
     fitDay.disabled = !next.stops.length;
     renderInspector();
-    schedule(moved);
+    redraw(moved);
   }
   function locationOf(e) {
     const rect = surface.getBoundingClientRect();
@@ -518,11 +523,14 @@ export function createPlaceMap(addStop) {
       zoomAt(zoom + (e.key === "-" ? -1 : 1));
     }
   });
-  let lastWidth = 0;
+  let lastWidth = 0,
+    lastHeight = 0;
   new ResizeObserver(() => {
-    const w = surface.clientWidth;
-    if (w && w !== lastWidth) {
+    const w = surface.clientWidth,
+      h = surface.clientHeight;
+    if (w && h && (w !== lastWidth || h !== lastHeight)) {
       lastWidth = w;
+      lastHeight = h;
       if (scope !== "custom") pendingFit = scope;
       schedule(true);
     }

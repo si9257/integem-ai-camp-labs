@@ -35,6 +35,7 @@ import {
 init("travel", openAISettings);
 const initial = {
   city: "sf",
+  activeDay: 0,
   start: plusDays(dateInZone(new Date(), cities.sf.zone), 1),
   days: 2,
   interests: ["science"],
@@ -52,6 +53,12 @@ const matchesDate = (x) =>
   /^\d{4}-\d{2}-\d{2}$/.test(x) && Number.isFinite(Date.parse(x + "T12:00Z"));
 if (!matchesDate(state.start)) state.start = initial.start;
 if (![1, 2, 3].includes(state.days)) state.days = 2;
+if (
+  !Number.isInteger(state.activeDay) ||
+  state.activeDay < 0 ||
+  state.activeDay >= state.days
+)
+  state.activeDay = 0;
 const tripStatus = notice(),
   weatherStatus = notice(),
   planStatus = notice();
@@ -61,7 +68,6 @@ let forecast = null,
   requestId = 0,
   controller = null,
   weatherError = "",
-  activeDay = 0,
   planning = false,
   revision = 0;
 function persist() {
@@ -176,12 +182,12 @@ function renderInterests() {
 function newCity(id) {
   if (!cities[id] || id === state.city) return false;
   state.city = id;
-  activeDay = 0;
+  state.activeDay = 0;
   message(planStatus, "");
   return true;
 }
 function rerenderTrip() {
-  activeDay = Math.max(0, Math.min(activeDay, state.days - 1));
+  state.activeDay = Math.max(0, Math.min(state.activeDay, state.days - 1));
   syncForm();
   renderCatalog();
   renderPlan();
@@ -206,6 +212,7 @@ dateInput.addEventListener("change", () => {
 });
 lengthSelect.addEventListener("change", () => {
   state.days = Number(lengthSelect.value);
+  state.activeDay = Math.min(state.activeDay, state.days - 1);
   changed();
   rerenderTrip();
 });
@@ -249,6 +256,7 @@ function applyBrief() {
   if (when && matchesDate(when[0]) && plusDays(when[0], 0) === when[0])
     state.start = when[0];
   state.appliedBrief = value;
+  state.activeDay = Math.min(state.activeDay, state.days - 1);
   changed();
   rerenderTrip();
   if (moved) loadWeather();
@@ -376,6 +384,7 @@ const tabs = workspaceTabs(
   ],
   (key) => {
     work.dataset.view = key;
+    save("atlas-view", key);
     placesPanel.hidden = key !== "explore";
     planPanel.hidden = key !== "itinerary";
     weatherPanel.hidden = key !== "weather";
@@ -395,13 +404,19 @@ $("#app").append(
   el("div", { cls: "atlas-toolbar" }, tabs.element, dayControl),
   work
 );
-tabs.select("explore");
+const lastView = read("atlas-view", "explore");
+tabs.select(
+  ["explore", "map", "itinerary", "weather"].includes(lastView)
+    ? lastView
+    : "explore"
+);
 daySelect.addEventListener("change", () => {
-  activeDay = Number(daySelect.value);
+  state.activeDay = Number(daySelect.value);
+  persist();
   renderCatalog();
 });
 function addToDay(id) {
-  const date = dates()[activeDay],
+  const date = dates()[state.activeDay],
     place = findPlace(id);
   if (!place || stops(date).some((stop) => stop.id === id)) return;
   plan()[date] = [...stops(date), { id, reason: "manual" }];
@@ -412,26 +427,26 @@ function addToDay(id) {
     tripStatus,
     place.name +
       t(" added to day ", " 已添加到第 ") +
-      (activeDay + 1) +
+      (state.activeDay + 1) +
       t(".", " 天。")
   );
 }
 function renderCatalog() {
   const days = dates(),
-    date = days[activeDay];
+    date = days[state.activeDay];
   daySelect.replaceChildren(
     ...days.map((day, i) =>
       el("option", { value: i }, t("Day ", "第 ") + (i + 1) + " · " + day)
     )
   );
-  daySelect.value = String(activeDay);
+  daySelect.value = String(state.activeDay);
   catalog.replaceChildren(
     ...city().places.map((p, i) => {
       const added = stops(date).some((stop) => stop.id === p.id);
       const add = btn(
         added
           ? t("Added", "已添加")
-          : t("Add to day ", "添加到第 ") + (activeDay + 1),
+          : t("Add to day ", "添加到第 ") + (state.activeDay + 1),
         () => addToDay(p.id),
         "add-place"
       );
@@ -478,7 +493,7 @@ function renderCatalog() {
     city: state.city,
     places: city().places,
     stops: stops(date),
-    day: activeDay,
+    day: state.activeDay,
     date,
   });
 }
