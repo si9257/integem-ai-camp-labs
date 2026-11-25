@@ -1,0 +1,261 @@
+.paper-studio {
+  width: min(100%, 55rem);
+  margin: 0 auto;
+  padding: 1rem clamp(0.65rem, 3vw, 1.5rem) 3rem;
+}
+.paper-studio[hidden],
+body.paper-screen #app,
+body.paper-screen #mast {
+  display: none !important;
+}
+.paper-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg, #171622);
+  padding: 0.55rem 0;
+}
+.paper-tools h1 {
+  margin: 0;
+  font-size: clamp(1rem, 3.7vw, 1.65rem);
+}
+.paper-tools button {
+  min-height: 44px;
+  white-space: normal;
+}
+.paper-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0 1rem;
+}
+.paper-controls:empty {
+  padding: 0;
+}
+.paper-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+}
+.paper-check[hidden] {
+  display: none;
+}
+.paper-check input {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.paper-controls select {
+  max-width: 100%;
+}
+.paper-document {
+  color: #1b1c28;
+  background: #fff;
+  line-height: 1.45;
+  border-radius: 0.75rem;
+  overflow-wrap: anywhere;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+}
+.paper-section {
+  padding: clamp(1rem, 4vw, 2.25rem);
+  color: #1b1c28;
+  background: #fff;
+}
+.paper-heading {
+  border-bottom: 2px solid #1d2031;
+  margin: 0 0 1em;
+  padding: 0 0 0.7em;
+}
+.paper-heading h2 {
+  font: 700 clamp(1.3rem, 4vw, 1.9rem) / 1.18 Arial, Helvetica, sans-serif;
+  color: #101320;
+  margin: 0.18em 0;
+  overflow-wrap: anywhere;
+}
+.paper-heading p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.paper-heading p:first-child,
+.card-side > span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.paper-fields {
+  display: flex;
+  gap: 8%;
+  margin: 1em 0;
+  font-size: 0.95em;
+}
+.paper-fields span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  flex: 1;
+}
+.paper-fields i {
+  flex: 1;
+  border-bottom: 1px solid #4c4d59;
+}
+.paper-directions {
+  margin: 1em 0;
+  font-size: 0.94em;
+}
+.paper-question {
+  margin: 1em 0 1.3em;
+  color: inherit;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.paper-question h3 {
+  color: #161722;
+  font-size: 1.03em;
+  line-height: 1.32;
+  margin: 0 0 0.48em;
+}
+.paper-choices {
+  list-style: none;
+  margin: 0.45em 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3em;
+}
+.paper-choices li {
+  display: grid;
+  grid-template-columns: 1.6em minmax(0, 1fr);
+  gap: 0.1em;
+}
+.paper-write-line {
+  height: 1.6em;
+  border-bottom: 1px solid #777985;
+}
+.paper-question p,
+.paper-question blockquote,
+.card-side blockquote {
+  margin: 0.4em 0;
+}
+.key-choice {
+  font-weight: 700;
+}
+.paper-document blockquote {
+  color: #41434d;
+  border-left: 2px solid #8c8e98;
+  padding: 0.15em 0.55em;
+  font-size: 0.92em;
+}
+.fold-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px dashed #555a67;
+  margin: 0 0 0.6em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.card-side {
+  padding: 0.65em;
+  min-height: 5.4em;
+  overflow-wrap: anywhere;
+}
+.card-side + .card-side {
+  border-left: 1px dashed #626672;
+}
+.card-side p {
+  color: #191a24;
+  font-size: 1em;
+  margin: 0.4em 0;
+}
+.recall-lines {
+  height: 3.2em;
+  border-bottom: 1px solid #777985;
+}
+.paper-notes {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.paper-section + .paper-section {
+  border-top: 4px double #5c5f69;
+}
+@media print {
+  @page {
+    size: auto;
+    margin: 14mm;
+  }
+  html:has(body.paper-screen),
+  body.paper-screen {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  body.paper-screen > *:not(.paper-studio),
+  .paper-screen .paper-tools,
+  .paper-screen .paper-controls {
+    display: none !important;
+  }
+  body.paper-screen .paper-studio,
+  .paper-document,
+  .paper-section {
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    background: #fff;
+  }
+  .paper-document {
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+  .paper-heading {
+    break-after: avoid-page;
+  }
+  .paper-heading h2 {
+    font-size: 18pt;
+  }
+  .paper-heading p:first-child,
+  .card-side > span {
+    font-size: 8.5pt;
+  }
+  .paper-directions {
+    font-size: 10pt;
+  }
+  .paper-section + .paper-section {
+    break-before: page;
+    page-break-before: always;
+    border: 0;
+  }
+  .fold-card {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-bottom: 4mm;
+  }
+  .card-side {
+    display: table-cell;
+    width: 50%;
+    vertical-align: top;
+    height: 26mm;
+    padding: 3mm;
+  }
+  .paper-notes {
+    orphans: 2;
+    widows: 2;
+  }
+}

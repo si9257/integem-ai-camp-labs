@@ -274,9 +274,8 @@ export function importBook(s, data) {
     data.version !== 1 ||
     !str(data.title, 80) ||
     !data.title.trim() ||
-    !str(data.notes, 14000) ||
+    typeof data.notes !== "string" ||
     !Array.isArray(data.cards) ||
-    data.cards.length > 1500 ||
     data.cards.some(
       (c) =>
         !c ||

@@ -1,6 +1,6 @@
 import { lang, t, parseJSON } from "./common.js";
 import { closedOn, validateDraft, fareInfo } from "./trip-engine.js";
-import { chat } from "./ai.js";
+import { chat } from "./ai.js?v=paper1";
 
 export async function draftWithModel({
   city,
@@ -17,6 +17,7 @@ export async function draftWithModel({
   history,
   base,
   stillCurrent,
+  job,
 }) {
   const drafts = {},
     used = new Set(
@@ -90,8 +91,16 @@ export async function draftWithModel({
       { role: "system", content: instructions },
       { role: "user", content: JSON.stringify(inputs) },
     ];
-    let reply = await chat(msgs),
+    const batchLabel =
+      batch.length === 1 ? batch[0] : batch[0] + " – " + batch.at(-1);
+    job.signal.throwIfAborted();
+    job.stage(t("Preparing visits · ", "正在安排景点 · ") + batchLabel);
+    let reply = await chat(msgs, job),
       parts;
+    job.stage(
+      t("Checking dates, venues and timing · ", "正在核对日期、景点和时段 · ") +
+        batchLabel
+    );
     try {
       parts = validateDraft(parseJSON(reply), city, batch, {
         ...preferences,
@@ -105,17 +114,27 @@ export async function draftWithModel({
             "行程已更改，请按当前偏好重试。"
           )
         );
-      reply = await chat([
-        ...msgs,
-        { role: "assistant", content: reply.slice(0, 7200) },
-        {
-          role: "user",
-          content:
-            "Validation: " +
-            String(invalid.message).slice(0, 300) +
-            ". Correct dates, IDs, opening windows and journey length. Cluster closer venues or remove a stop. Minutes must be an integer 20–240. Return the complete corrected JSON batch.",
-        },
-      ]);
+      job.stage(
+        t(
+          "Revising a plan that did not pass the checks · ",
+          "正在修正未通过核查的安排 · "
+        ) + batchLabel
+      );
+      reply = await chat(
+        [
+          ...msgs,
+          { role: "assistant", content: reply.slice(0, 7200) },
+          {
+            role: "user",
+            content:
+              "Validation: " +
+              String(invalid.message).slice(0, 300) +
+              ". Correct dates, IDs, opening windows and journey length. Cluster closer venues or remove a stop. Minutes must be an integer 20–240. Return the complete corrected JSON batch.",
+          },
+        ],
+        job
+      );
+      job.signal.throwIfAborted();
       parts = validateDraft(parseJSON(reply), city, batch, {
         ...preferences,
         hotel: base?.id || "",

@@ -23,10 +23,10 @@ import {
   prettyTime,
   dateInZone,
   plusDays,
-} from "./app-ui.js";
+} from "./app-ui.js?v=paper1";
 import { tripDate } from "./trip-brief.js?v=student5";
 import { familyLink, shareTrip, openFamily } from "./family.js";
-import { configured, openAISettings } from "./ai.js";
+import { configured, openAISettings } from "./ai.js?v=paper1";
 import { createPlaceMap, osmPlaceURL } from "./city-map.js";
 import { cities, interests, setting } from "./places.js";
 import {
@@ -58,7 +58,8 @@ import {
   costEditor,
   budgetNames,
 } from "./trip-studio.js?v=student5";
-import { draftWithModel } from "./trip-agent.js";
+import { startGeneration, untilCancelled } from "./generation.js";
+import { draftWithModel } from "./trip-agent.js?v=paper1";
 if (!document.querySelector("link[data-trip-studio]"))
   document.head.append(
     el("link", {
@@ -78,7 +79,7 @@ function startPlanner() {
   init("travel", openAISettings);
   const practice = new URL(location.href).searchParams.get("practice") === "1";
   const tripKey = practice ? "atlas-class-practice-v1" : "atlas-v1";
-  const viewKey = practice ? "atlas-class-practice-view" : "atlas-view";
+  let tripOpened = false;
   const initial = {
     city: "sf",
     activeDay: 0,
@@ -264,6 +265,7 @@ function startPlanner() {
   function newCity(id) {
     if (!cities[id] || id === state.city) return false;
     state.city = id;
+    tripOpened = false;
     state.activeDay = 0;
     filterMode = "all";
     message(planStatus, "");
@@ -718,9 +720,13 @@ function startPlanner() {
       ["weather", t("Weather", "天气"), "sun"],
       ["bookings", t("Bookings", "预订"), "cards"],
     ],
-    (key) => {
+    (key, chosen) => {
       work.dataset.view = key;
-      save(viewKey, key);
+      if (chosen && (key === "map" || key === "itinerary")) {
+        tripOpened = true;
+        renderCatalog();
+      }
+      if (key === "itinerary") renderPlan();
       banner.hidden = shortcuts.hidden = key !== "explore";
       bar.hidden = key === "explore";
       compactTitle.textContent =
@@ -839,6 +845,7 @@ function startPlanner() {
       stops(date).some((stop) => stop.id === id)
     )
       return;
+    tripOpened = true;
     plan()[date] = [...stops(date), { id, reason: "manual" }];
     changed();
     renderPlan();
@@ -927,7 +934,7 @@ function startPlanner() {
     map.update({
       city: state.city,
       places: city().places,
-      stops: stops(date),
+      stops: tripOpened ? stops(date) : [],
       day: state.activeDay,
       date,
     });
@@ -1213,13 +1220,38 @@ function startPlanner() {
       list = stops(date),
       info = meta()[date] || {},
       c = city();
-    const title = info.language && info.language !== lang ? "" : info.title;
-    const source =
-      info.source === "ai"
-        ? t("AI itinerary", "AI 行程")
-        : info.source === "guide"
-        ? t("City guide itinerary", "城市指南行程")
-        : t("Your itinerary", "自选行程");
+    const hasSaved = all.some((d) => stops(d).length);
+    const canShow = tripOpened && list.length > 0;
+    planPanel.querySelector(".refine-card").hidden = !canShow;
+    planPanel.querySelector(".plan-actions").hidden = !(tripOpened && hasSaved);
+    if (!tripOpened && hasSaved) {
+      itinerary.replaceChildren(
+        el(
+          "div",
+          { cls: "empty-trip" },
+          icon("route"),
+          el("h2", {}, t("Your saved itinerary", "已保存的行程")),
+          small(c.name + " · " + state.start),
+          btn(
+            t("Open saved itinerary", "打开已保存的行程"),
+            () => tabs.select("itinerary"),
+            "primary"
+          )
+        )
+      );
+      return;
+    }
+    const title =
+      list.length && (!info.language || info.language === lang)
+        ? info.title
+        : "";
+    const source = !list.length
+      ? t("My trip", "我的行程")
+      : info.source === "ai"
+      ? t("AI itinerary", "AI 行程")
+      : info.source === "guide"
+      ? t("City guide itinerary", "城市指南行程")
+      : t("Your itinerary", "自选行程");
     itinerary.replaceChildren(
       el(
         "header",
@@ -1377,6 +1409,7 @@ function startPlanner() {
             );
             return;
           }
+          tripOpened = true;
           for (const [d, v] of Object.entries(draft)) {
             plan()[d] = v.stops;
             meta()[d] = v.meta;
@@ -1492,6 +1525,15 @@ function startPlanner() {
     const status = revise ? planStatus : tripStatus;
     planning = true;
     aiBtn.disabled = true;
+    const job =
+      mode === "guide"
+        ? null
+        : startGeneration(
+            revise
+              ? t("Revising your day", "正在调整当天行程")
+              : t("Planning your trip", "正在生成行程"),
+            t("Checking the available NWS forecast", "正在核对可用的 NWS 预报")
+          );
     message(
       status,
       mode === "guide"
@@ -1502,7 +1544,9 @@ function startPlanner() {
           )
     );
     try {
-      if (mode !== "guide" && weatherMode === "loading") await pendingWeather;
+      if (job && weatherMode === "loading")
+        await untilCancelled(pendingWeather, job.signal);
+      job?.signal.throwIfAborted();
       if (revision !== stamp)
         throw Error(
           t(
@@ -1544,6 +1588,7 @@ function startPlanner() {
               base: baseHotel(),
               history: state.requests[state.city] || [],
               stillCurrent: () => revision === stamp,
+              job,
             });
       if (revision !== stamp)
         throw Error(
@@ -1552,15 +1597,24 @@ function startPlanner() {
             "修改已保存，请按最新内容重新生成。"
           )
         );
+      job?.signal.throwIfAborted();
+      job?.finish();
       showDraft(draft, stamp, mode === "guide" ? "guide" : "ai", request);
       message(status, "");
     } catch (e) {
       message(
         status,
-        e.message || t("The planner could not finish.", "本次规划未完成。"),
-        true
+        job?.signal.aborted
+          ? t(
+              "Generation stopped. Your saved itinerary is still available.",
+              "生成已停止，之前保存的行程仍可打开。"
+            )
+          : e.message || t("The planner could not finish.", "本次规划未完成。"),
+        !job?.signal.aborted
       );
+      status.scrollIntoView({ block: "nearest" });
     } finally {
+      job?.finish();
       planning = false;
       aiBtn.disabled = false;
     }
@@ -1673,6 +1727,6 @@ function startPlanner() {
   syncForm();
   renderCatalog();
   renderPlan();
-  tabs.start(read(viewKey, "explore"));
+  tabs.start("explore");
   loadWeather();
 }

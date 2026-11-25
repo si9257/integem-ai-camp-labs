@@ -146,7 +146,7 @@ export function workspaceTabs(label, choices, change, aliases = {}) {
     current = key;
     for (const [id, b] of buttons)
       b.setAttribute("aria-pressed", String(id === (aliases[key] || key)));
-    change(key);
+    change(key, navigate);
     if (top) window.scrollTo({ top: 0, behavior: "auto" });
   }
   for (const [id, name, glyph] of choices) {

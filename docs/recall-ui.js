@@ -9,7 +9,7 @@ import {
   t,
   prettyTime,
 } from "./app-ui.js";
-import { draftCards, gradeRecall } from "./study-library.js?v=subjects3";
+import { draftCards, gradeRecall } from "./study-library.js?v=paper1";
 
 export function showQuote(title, paragraph, quote) {
   sheet(title, (body) => {
@@ -68,6 +68,34 @@ export function editCards(book, onSave) {
       items.push({ front, back, evidence, include });
       return front;
     }
+    function finish(mode) {
+      const chosen = items
+        .filter((v) => v.include.checked)
+        .map(({ front, back, evidence }) => ({
+          front: front.value.trim(),
+          back: back.value.trim(),
+          evidence: evidence.value.trim(),
+        }));
+      if (
+        !chosen.length ||
+        chosen.some(
+          (c) =>
+            !c.front || !c.back || !c.evidence || !source.includes(c.evidence)
+        )
+      ) {
+        message(
+          status,
+          t(
+            "Keep at least one card. Each needs a prompt, an answer and an exact source line.",
+            "至少保留一张卡，每张卡需有问题、答案和一段与笔记完全一致的原句。"
+          ),
+          true
+        );
+        return;
+      }
+      close();
+      onSave(chosen, mode);
+    }
     drafts.forEach(addRow);
     if (!drafts.length) addRow({ front: "", back: "", evidence: "" });
     body.append(
@@ -82,38 +110,11 @@ export function editCards(book, onSave) {
         addRow({ front: "", back: "", evidence: "" }).focus()
       ),
       status,
+      btn(t("Save & print", "保存并打印"), () => finish("print")),
       btn(
         t("Save & practice", "保存并练习"),
         () => {
-          const chosen = items
-            .filter((v) => v.include.checked)
-            .map(({ front, back, evidence }) => ({
-              front: front.value.trim(),
-              back: back.value.trim(),
-              evidence: evidence.value.trim(),
-            }));
-          if (
-            !chosen.length ||
-            chosen.some(
-              (c) =>
-                !c.front ||
-                !c.back ||
-                !c.evidence ||
-                !source.includes(c.evidence)
-            )
-          ) {
-            message(
-              status,
-              t(
-                "Keep at least one card. Each needs a prompt, an answer and an exact source line.",
-                "至少保留一张卡，每张卡需有问题、答案和一段与笔记完全一致的原句。"
-              ),
-              true
-            );
-            return;
-          }
-          close();
-          onSave(chosen);
+          finish("practice");
         },
         "primary"
       )
