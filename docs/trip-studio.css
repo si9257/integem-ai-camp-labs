@@ -1,0 +1,379 @@
+.travel .app-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.travel .day-rail {
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  scrollbar-width: thin;
+  padding-bottom: 3px;
+}
+.travel .day-chip {
+  flex: none;
+  white-space: nowrap;
+  min-height: 42px;
+}
+.studio-composer,
+.studio-card,
+.draft-day,
+.group-fields {
+  min-width: 0;
+}
+.studio-composer,
+.studio-card {
+  border: 1px solid #e6ddd3;
+  background: #fffdfa;
+  color: #28272c;
+  border-radius: 19px;
+  padding: clamp(15px, 3vw, 23px);
+}
+.studio-composer {
+  position: relative;
+  margin: 14px 0 8px;
+  background: #fffdfa;
+  box-shadow: 0 5px 15px #36231808;
+}
+.studio-composer h2,
+.studio-card h2,
+.schedule-head h2 {
+  margin: 0 0 9px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.studio-composer textarea,
+.refine-card textarea {
+  width: 100%;
+  min-height: 73px;
+  resize: vertical;
+  font: inherit;
+  font-size: 16px;
+  padding: 12px 13px;
+  line-height: 1.42;
+  border-radius: 12px;
+  background: white;
+}
+.composer-actions,
+.studio-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 13px;
+}
+.composer-actions {
+  padding: 8px 0;
+}
+.composer-actions .weather-quick {
+  margin: 0;
+}
+.studio-links a,
+.schedule-body > a,
+.rate-result > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  color: #823b41;
+  text-underline-offset: 3px;
+  font-size: 0.87rem;
+  font-weight: 650;
+}
+.studio-links .text-btn {
+  min-height: 38px;
+  padding: 4px 5px;
+}
+.bookings-board,
+.hotel-list,
+.room-rates,
+.itinerary,
+.family-stops {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.bookings-board[hidden],
+.travel [hidden] {
+  display: none !important;
+}
+.room-criteria {
+  font-weight: 650;
+  margin: 0.5em 0 0.9em;
+}
+.hotel-card,
+.ticket-row,
+.rate-result {
+  border-top: 1px solid #e6ddd3;
+  padding: 14px 0 3px;
+  min-width: 0;
+}
+.rate-card {
+  border-top: 4px solid #ad3b53;
+}
+.rate-card h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+.rate-result {
+  position: relative;
+  background: white;
+  border: 1px solid #e6ddd3;
+  border-radius: 13px;
+  padding: 14px;
+}
+.rate-result h3,
+.ticket-row strong,
+.hotel-card h3 {
+  margin: 0.2em 0;
+  overflow-wrap: anywhere;
+}
+.room-total {
+  font-size: 1.35rem;
+  color: #274d46;
+}
+.rate-result p {
+  margin: 3px 0;
+}
+.hotel-card p,
+.transit-board p,
+.ticket-row p {
+  margin: 6px 0;
+}
+.hotel-list {
+  gap: 4px;
+}
+.selected-base {
+  background: #275348;
+  color: white;
+  border-color: #275348;
+}
+.group-fields {
+  display: grid;
+  gap: 9px;
+}
+.group-fields .pair {
+  min-width: 0;
+}
+.group-fields select {
+  max-width: 100%;
+}
+.schedule-head {
+  padding: 6px 0 0;
+}
+.schedule-head p,
+.schedule-body p {
+  margin: 4px 0;
+}
+.schedule-item {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  border: 1px solid #e5ded4;
+  background: #fffdfa;
+  border-radius: 15px;
+  overflow: hidden;
+}
+.schedule-time {
+  font-size: 0.79rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+  align-self: stretch;
+  padding: 14px 5px 8px 9px;
+  background: #f5ede6;
+  color: #514342;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.schedule-body {
+  min-width: 0;
+  padding: 11px 12px;
+  overflow-wrap: anywhere;
+}
+.schedule-body h3 {
+  font-size: 1.09rem;
+  margin: 3px 0;
+  line-height: 1.25;
+}
+.schedule-body .stop-tools {
+  margin-top: 4px;
+}
+.type-leg,
+.type-break {
+  border-style: dashed;
+  background: transparent;
+}
+.type-leg .schedule-time,
+.type-break .schedule-time {
+  background: transparent;
+  color: #455751;
+}
+.type-leg .schedule-body,
+.type-break .schedule-body {
+  padding: 7px 11px;
+}
+.type-leg .schedule-body small,
+.type-leg .schedule-body a {
+  min-height: 30px;
+}
+.type-meal .schedule-time {
+  background: #e8f0e7;
+  color: #3c5743;
+}
+.closure {
+  display: block;
+  color: #a32937;
+}
+.base-note {
+  background: #f0e9e1;
+  padding: 8px 12px;
+  border-radius: 9px;
+  margin: 0;
+}
+.budget-card summary {
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 30px;
+}
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+.cost-grid input {
+  width: 100%;
+  min-width: 0;
+}
+.cost-total {
+  font-weight: 700;
+}
+.refine-card {
+  margin: 14px 0;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+.draft-day {
+  border-left: 3px solid #a63951;
+  padding: 5px 13px;
+  margin: 4px 0 12px;
+  background: #fffaf4;
+}
+.draft-day h3,
+.draft-day p {
+  margin: 5px 0;
+}
+.draft-day time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.map-panel > select {
+  display: block;
+  width: calc(100% - 22px);
+  margin: 0 11px 8px;
+  font-size: 16px;
+  padding: 8px 10px;
+  min-height: 42px;
+  border: 1px solid #d5cbc0;
+  border-radius: 10px;
+  background: #fff;
+  color: #352f32;
+}
+.travel .atlas-pin,
+.travel .atlas-pin:active,
+.travel .atlas-pin:hover,
+.travel .atlas-pin:focus {
+  transform: translate(-50%, -50%) !important;
+  transition: none;
+  touch-action: manipulation;
+  margin: 0;
+  min-height: 36px;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+}
+.map-scene > .map-inspector {
+  position: absolute;
+  z-index: 5;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  max-height: 65%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #fffdf8;
+  border: 1px solid #d9ccbc;
+  border-radius: 14px;
+  box-shadow: 0 3px 18px #28221e33;
+  padding: 10px 12px;
+}
+.map-place-top h3 {
+  margin: 2px 0;
+}
+.pin-activity {
+  font-size: 0.83rem;
+  line-height: 1.38;
+  margin: 4px 0;
+}
+.map-help {
+  margin: 4px 12px 9px;
+}
+.map-detail-actions {
+  flex-wrap: wrap;
+  gap: 5px 13px;
+}
+.map-close {
+  min-width: 40px;
+  min-height: 40px;
+}
+.map-detail-actions a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
+}
+@media (min-width: 850px) {
+  .bookings-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .schedule-item {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+  .schedule-time {
+    padding-left: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .travel .dock-item {
+    padding-inline: 1px;
+    font-size: 0.67rem;
+  }
+  .schedule-item {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .schedule-time {
+    font-size: 0.72rem;
+  }
+  .composer-actions button {
+    padding-inline: 9px;
+  }
+}
+
+.rate-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin: 8px 0 13px;
+}
+.rate-filters input[type="checkbox"] {
+  width: 22px;
+  min-height: 22px;
+  height: 22px;
+  align-self: flex-start;
+  accent-color: #a73951;
+}
+.rate-filters .field {
+  align-content: start;
+}
+.rate-filters input[type="number"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}

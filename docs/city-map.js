@@ -68,7 +68,19 @@ export function createPlaceMap(addStop) {
     el("div", { cls: "map-zoom" }, zoomIn, zoomOut),
     status
   );
-  const inspector = el("div", { cls: "map-inspector" });
+  const inspector = el("div", {
+    cls: "map-inspector",
+    hidden: true,
+    role: "region",
+    "aria-label": t("Selected place", "已选景点"),
+  });
+  scene.append(inspector);
+  const picker = el("select", {
+    "aria-label": t("Find a place on the map", "在地图上查找景点"),
+    onchange: (e) => {
+      if (e.target.value) select(e.target.value);
+    },
+  });
   const credit = el(
     "div",
     { cls: "map-credit" },
@@ -89,9 +101,17 @@ export function createPlaceMap(addStop) {
       heading,
       el("div", { cls: "map-tools" }, fitCity, fitDay)
     ),
+    picker,
     scene,
     credit,
-    inspector
+    el(
+      "p",
+      { cls: "map-help" },
+      t(
+        "Letters mark places. Numbers and the dashed line show your stop order. Open directions in My trip for street routes.",
+        "字母表示景点，数字与虚线表示游览顺序。实际街道路线上「行程」查看。"
+      )
+    )
   );
   let view = null,
     selected = null,
@@ -288,6 +308,27 @@ export function createPlaceMap(addStop) {
       let pin = pinNodes.get(p.id);
       if (!pin) {
         pin = btn("", () => select(p.id, false), "atlas-pin");
+        let down = null;
+        pin.addEventListener("pointerdown", (e) => {
+          if (e.button === 0) {
+            down = [e.clientX, e.clientY];
+            e.stopPropagation();
+            pin.setPointerCapture?.(e.pointerId);
+          }
+        });
+        pin.addEventListener("pointercancel", () => {
+          down = null;
+        });
+        pin.addEventListener("pointerup", (e) => {
+          if (
+            down &&
+            Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 12
+          ) {
+            select(p.id, false);
+            e.stopPropagation();
+          }
+          down = null;
+        });
         pinLayer.append(pin);
         pinNodes.set(p.id, pin);
       }
@@ -335,7 +376,8 @@ export function createPlaceMap(addStop) {
           (n < 0 ? "" : " · " + t("Stop ", "第几站 ") + (n + 1))
       );
       pin.title = p.name;
-      pin.textContent = n < 0 ? String.fromCharCode(65 + i) : String(n + 1);
+      const glyph = n < 0 ? String.fromCharCode(65 + i) : String(n + 1);
+      if (pin.textContent !== glyph) pin.textContent = glyph;
     });
     zoomIn.disabled = zoom >= MAX_ZOOM;
     zoomOut.disabled = zoom <= MIN_ZOOM;
@@ -343,6 +385,8 @@ export function createPlaceMap(addStop) {
   function renderInspector() {
     if (!view) return;
     const place = view.places.find((p) => p.id === selected);
+    inspector.hidden = !place;
+    picker.value = place?.id || "";
     if (!place) {
       inspector.replaceChildren(
         el(
@@ -384,15 +428,21 @@ export function createPlaceMap(addStop) {
         el(
           "div",
           {},
-          el("span", { cls: "place-meta" }, setting(place)),
+          el(
+            "span",
+            { cls: "place-meta" },
+            setting(place) + " · " + place.minutes + " min · " + place.area
+          ),
           el("h3", {}, place.name)
         ),
         clear
       ),
+      el("p", { cls: "pin-activity" }, place.description),
       el(
         "div",
         { cls: "map-detail-actions" },
         add,
+        link(t("Tickets / visit ↗", "门票／参观 ↗"), place.booking, true),
         link(
           t("OpenStreetMap ↗", "在 OpenStreetMap 查看 ↗"),
           osmPlaceURL(place),
@@ -422,6 +472,20 @@ export function createPlaceMap(addStop) {
     view = { ...next, order: newOrder };
     if (moved) {
       selected = null;
+      picker.replaceChildren(
+        el(
+          "option",
+          { value: "" },
+          t("Find a place on this map…", "在地图上查找景点…")
+        ),
+        ...next.places.map((p, i) =>
+          el(
+            "option",
+            { value: p.id },
+            String.fromCharCode(65 + i) + " · " + p.name
+          )
+        )
+      );
       pinNodes.forEach((n) => n.remove());
       pinNodes.clear();
       fit("city");
@@ -502,6 +566,10 @@ export function createPlaceMap(addStop) {
     },
     { passive: false }
   );
+  scene.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && selected)
+      inspector.querySelector(".map-close")?.click();
+  });
   surface.addEventListener("keydown", (e) => {
     if (e.target !== surface) return;
     const dirs = {

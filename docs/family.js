@@ -14,23 +14,25 @@ import {
   plusDays,
 } from "./app-ui.js";
 import { cities, setting } from "./places.js";
-import { osmPlaceURL } from "./city-map.js";
+import { defaultPrefs, MAX_DAYS, timeline } from "./trip-engine.js";
+import { activityRow, travelBoard } from "./trip-studio.js";
 
 export function readFamilyTrip(hash) {
   if (
     typeof hash !== "string" ||
     !hash.startsWith("#trip=") ||
-    hash.length > 600
+    hash.length > 5000
   )
     return null;
-  const [city, date, ...parts] = hash.slice(6).split("~");
+  const [route, ...extras] = hash.slice(6).split("!");
+  const [city, date, ...parts] = route.split("~");
   if (
     !Object.hasOwn(cities, city) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
     !Number.isFinite(Date.parse(date + "T12:00Z")) ||
     plusDays(date, 0) !== date ||
     parts.length < 1 ||
-    parts.length > 3
+    parts.length > MAX_DAYS
   )
     return null;
   const known = new Set(cities[city].places.map((p) => p.id));
@@ -44,15 +46,78 @@ export function readFamilyTrip(hash) {
     )
   )
     return null;
-  return { city, date, days };
+  if (!extras.length) return { city, date, days };
+  const [v, clock, mode, pace, hotel, mealText, minuteText] = extras,
+    c = cities[city];
+  if (
+    extras.length !== 7 ||
+    v !== "2" ||
+    !/^([01][0-9]|2[0-3])[0-5][0-9]$/.test(clock) ||
+    !["walking", "transit", "driving"].includes(mode) ||
+    !["easy", "balanced", "full"].includes(pace) ||
+    (hotel && !c.hotels.some((h) => h.id === hotel))
+  )
+    return null;
+  const meals = mealText.split("."),
+    minutes = minuteText
+      .split("~")
+      .map((v) => (v ? v.split(",").map(Number) : []));
+  if (
+    meals.length !== days.length ||
+    meals.some((m) => m && !c.meals.some((v) => v.id === m)) ||
+    minutes.length !== days.length ||
+    minutes.some(
+      (vs, i) =>
+        vs.length !== days[i].length ||
+        vs.some((n) => !Number.isInteger(n) || n < 20 || n > 240)
+    )
+  )
+    return null;
+  return {
+    city,
+    date,
+    days,
+    prefs: {
+      ...defaultPrefs,
+      mode,
+      pace,
+      startTime: clock.slice(0, 2) + ":" + clock.slice(2),
+      hotel,
+    },
+    meals,
+    minutes,
+  };
 }
-export function familyLink(address, city, date, days) {
+export function familyLink(address, city, date, days, prefs, info = []) {
   const url = new URL("./", address);
   url.hash =
     "trip=" +
     [city, date, ...days.map((day) => day.map((s) => s.id).join("."))].join(
       "~"
     );
+  if (prefs)
+    url.hash +=
+      "!" +
+      [
+        "2",
+        prefs.startTime.replace(":", ""),
+        prefs.mode,
+        prefs.pace,
+        prefs.hotel || "",
+        days.map((d, i) => info[i]?.mealId || "").join("."),
+        days
+          .map((d) =>
+            d
+              .map(
+                (s) =>
+                  s.minutes ||
+                  cities[city].places.find((p) => p.id === s.id)?.minutes ||
+                  60
+              )
+              .join(",")
+          )
+          .join("~"),
+      ].join("!");
   return url.href;
 }
 export function shareTrip(url) {
@@ -85,8 +150,8 @@ export function shareTrip(url) {
     body.append(
       small(
         t(
-          "Anyone with this link can see the city, travel dates and stops as they are now. Your family notes, budget and AI settings stay private.",
-          "持有链接的人可以查看此刻的城市、日期和景点顺序。家庭描述、预算和 AI 设置保留在本机。"
+          "Anyone with this link can see the dates, stops, public hotel choice and suggested schedule. Your family notes, budget and AI settings stay private.",
+          "持有链接的人可以查看日期、景点、所选酒店和建议时间表。家庭描述、预算和 AI 设置保留在本机。"
         )
       ),
       input,
@@ -179,39 +244,35 @@ export function openFamily(hash) {
     list.replaceChildren(el("h2", {}, date));
     if (!view.days[di].length)
       list.append(small(t("No stops on this day yet.", "当天还未安排景点。")));
-    view.days[di].forEach((id, n) => {
-      const p = city.places.find((v) => v.id === id);
+    const prefs = view.prefs || defaultPrefs;
+    const stops = view.days[di].map((id, i) => ({
+      id,
+      minutes: view.minutes?.[di]?.[i],
+    }));
+    const base = city.hotels.find((h) => h.id === prefs.hotel);
+    if (base)
       list.append(
         el(
-          "article",
-          { cls: "family-place" },
-          el("img", {
-            src: asset("place-" + id + ".webp"),
-            alt: "",
-            loading: "lazy",
-            width: 90,
-            height: 85,
-          }),
-          el(
-            "div",
-            {},
-            el(
-              "p",
-              { cls: "place-meta" },
-              t("Stop " + (n + 1), "第 " + (n + 1) + " 站") + " · " + setting(p)
-            ),
-            el("h3", {}, p.name),
-            el("p", {}, p.description),
-            el(
-              "div",
-              { cls: "actions" },
-              link(t("Official site ↗", "官方网站 ↗"), p.url, true),
-              link(t("Open map ↗", "查看地图 ↗"), osmPlaceURL(p), true)
-            )
+          "p",
+          {},
+          t("Home base · ", "出发酒店 · "),
+          link(base.name + " ↗", base.url, true)
+        )
+      );
+    if (stops.length)
+      list.append(
+        small(
+          t(
+            "Suggested local times. Check live departures, tickets and opening hours before your visit.",
+            "以下为当地建议时段，请在出发前核对实时班次、门票和开放时间。"
           )
         )
       );
-    });
+    for (const item of timeline(city, date, stops, prefs, {
+      mealId: view.meals?.[di],
+    }))
+      list.append(activityRow(item, city, prefs));
+    list.append(travelBoard(city, date));
   }
   view.days.forEach((d, i) =>
     rail.append(
